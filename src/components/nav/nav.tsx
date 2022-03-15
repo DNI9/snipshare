@@ -4,6 +4,7 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import { AppConfig } from '~/utils/AppConfig';
 
 import { NextLink } from '../core';
+import { AppMenu } from '../menu';
 
 export const Nav = () => {
   return (
@@ -33,7 +34,9 @@ export const Nav = () => {
             Create
           </Button>
         </NextLink>
-        <Avatar name="DNI9" size="md" />
+        <AppMenu>
+          <Avatar name="DNI9" size="md" />
+        </AppMenu>
       </HStack>
     </HStack>
   );
