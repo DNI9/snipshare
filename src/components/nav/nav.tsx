@@ -19,7 +19,7 @@ export const Nav = () => {
       <HStack spacing={5}>
         <Heading size="lg">{AppConfig.site_name}</Heading>
         <NextLink href="/explore">
-          <Tag _hover={{ bg: 'blue.100' }} rounded="full">
+          <Tag _hover={{ bg: 'blue.100' }} bg="transparent" rounded="full">
             explore
           </Tag>
         </NextLink>
