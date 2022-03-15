@@ -8,6 +8,8 @@ import {
 } from 'next-auth/react';
 import { AiOutlineGithub } from 'react-icons/ai';
 
+import { Meta } from '~/layout';
+
 type Props = {
   providers: ClientSafeProvider[];
 };
@@ -33,30 +35,32 @@ const Providers = ({ providers }: Props) => {
 
 export default function SignIn({ providers }: Props) {
   return (
-    <Container maxW="container.xl" minH="100vh">
-      <Flex
-        align="center"
-        justify="center"
-        minH={'100vh'}
-        flexDirection="column"
-      >
-        <Text fontSize="2xl">Create, Share and explore</Text>
-
-        <Heading
-          bgGradient="linear(to-r, blue.400, purple.300)"
-          bgClip="text"
-          fontSize="8xl"
-          fontWeight="extrabold"
-          as="h1"
-          size="4xl"
+    <>
+      <Meta title="Login to Snipshare" />
+      <Container maxW="container.xl" minH="100vh">
+        <Flex
+          align="center"
+          justify="center"
+          minH={'100vh'}
+          flexDirection="column"
         >
-          Code Snippets
-        </Heading>
-        <Box mt={25}>
-          <Providers providers={providers} />
-        </Box>
-      </Flex>
-    </Container>
+          <Text fontSize="2xl">Create, Share and explore</Text>
+          <Heading
+            bgGradient="linear(to-r, blue.400, purple.300)"
+            bgClip="text"
+            fontSize="8xl"
+            fontWeight="extrabold"
+            as="h1"
+            size="4xl"
+          >
+            Code Snippets
+          </Heading>
+          <Box mt={25}>
+            <Providers providers={providers} />
+          </Box>
+        </Flex>
+      </Container>
+    </>
   );
 }
 
