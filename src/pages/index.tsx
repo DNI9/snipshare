@@ -1,8 +1,8 @@
-import { Heading, Text } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import { DefaultSession } from 'next-auth';
 import { getSession } from 'next-auth/react';
 
+import { TitleRow } from '~/components/dashboard';
 import { Meta, AppLayout } from '~/layout';
 
 type Props = {
@@ -14,8 +14,7 @@ const Index: React.FC<Props> = ({ user }) => {
     <>
       <Meta title="SnipShare" />
       <AppLayout user={user}>
-        <Heading as="h1">SnipShare</Heading>
-        <Text>Create, Share &amp; Explore code snippets</Text>
+        <TitleRow href="/collections" title="My collections" />
       </AppLayout>
     </>
   );
