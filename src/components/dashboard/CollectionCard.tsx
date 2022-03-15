@@ -1,12 +1,18 @@
+import type { StackProps } from '@chakra-ui/layout';
 import { Heading, HStack, Text, useToken, VStack } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import { FaLock } from 'react-icons/fa';
 import { IoMdBookmark } from 'react-icons/io';
+
+const MotionVStack = motion<StackProps>(VStack);
 
 export const CollectionCard = () => {
   const [blue200] = useToken('colors', ['blue.400']);
 
   return (
-    <VStack
+    <MotionVStack
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
       _hover={{
         boxShadow: 'xl',
         border: '1px',
@@ -31,6 +37,6 @@ export const CollectionCard = () => {
       <Text color="gray" fontSize="sm">
         22 snippets
       </Text>
-    </VStack>
+    </MotionVStack>
   );
 };
