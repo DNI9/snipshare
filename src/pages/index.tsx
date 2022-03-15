@@ -1,8 +1,9 @@
+import { SimpleGrid } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import { DefaultSession } from 'next-auth';
 import { getSession } from 'next-auth/react';
 
-import { TitleRow } from '~/components/dashboard';
+import { CollectionCard, TitleRow } from '~/components/dashboard';
 import { Meta, AppLayout } from '~/layout';
 
 type Props = {
@@ -15,6 +16,10 @@ const Index: React.FC<Props> = ({ user }) => {
       <Meta title="SnipShare" />
       <AppLayout user={user}>
         <TitleRow href="/collections" title="My collections" />
+        <SimpleGrid mt={3} columns={{ sm: 2, md: 3 }} spacing={5}>
+          <CollectionCard />
+          <CollectionCard />
+        </SimpleGrid>
       </AppLayout>
     </>
   );
