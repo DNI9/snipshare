@@ -1,4 +1,5 @@
 import { Avatar, Button, Heading, HStack, Tag } from '@chakra-ui/react';
+import { DefaultSession } from 'next-auth';
 import { AiOutlinePlus } from 'react-icons/ai';
 
 import { AppConfig } from '~/utils/AppConfig';
@@ -6,7 +7,11 @@ import { AppConfig } from '~/utils/AppConfig';
 import { NextLink } from '../core';
 import { AppMenu } from '../menu';
 
-export const Nav = () => {
+type Props = {
+  user: DefaultSession['user'];
+};
+
+export const Nav: React.FC<Props> = ({ user }) => {
   return (
     <HStack
       py={2}
@@ -34,9 +39,17 @@ export const Nav = () => {
             Create
           </Button>
         </NextLink>
-        <AppMenu>
-          <Avatar name="DNI9" size="md" />
-        </AppMenu>
+        {user ? (
+          <AppMenu>
+            <Avatar
+              showBorder
+              name={user?.name ?? 'Anon'}
+              src={user?.image ?? ''}
+              h="45px"
+              w="45px"
+            />
+          </AppMenu>
+        ) : null}
       </HStack>
     </HStack>
   );
