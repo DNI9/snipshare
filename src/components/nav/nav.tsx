@@ -22,7 +22,9 @@ export const Nav: React.FC<Props> = ({ user }) => {
       align="center"
     >
       <HStack spacing={5}>
-        <Heading size="lg">{AppConfig.site_name}</Heading>
+        <NextLink href="/">
+          <Heading size="lg">{AppConfig.site_name}</Heading>
+        </NextLink>
         <NextLink href="/explore">
           <Tag _hover={{ bg: 'blue.100' }} bg="transparent" rounded="full">
             explore
