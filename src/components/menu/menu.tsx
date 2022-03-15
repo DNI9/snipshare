@@ -1,4 +1,5 @@
 import { MenuButton, MenuList, MenuItem, Menu } from '@chakra-ui/react';
+import { signOut } from 'next-auth/react';
 import Router from 'next/router';
 import { FiLogOut } from 'react-icons/fi';
 import { ImUser } from 'react-icons/im';
@@ -22,9 +23,7 @@ const menuItems = [
   {
     title: 'Logout',
     icon: <FiLogOut size={20} />,
-    onClick: () => {
-      console.log('logout');
-    },
+    onClick: () => signOut(),
   },
 ];
 
