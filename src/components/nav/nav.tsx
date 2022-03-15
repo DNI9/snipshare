@@ -1,4 +1,5 @@
-import { Avatar, Box, Heading, HStack } from '@chakra-ui/react';
+import { Avatar, Button, Heading, HStack, Tag } from '@chakra-ui/react';
+import { AiOutlinePlus } from 'react-icons/ai';
 
 import { AppConfig } from '~/utils/AppConfig';
 
@@ -16,11 +17,24 @@ export const Nav = () => {
     >
       <HStack spacing={5}>
         <Heading size="lg">{AppConfig.site_name}</Heading>
-        <NextLink href="/explore">explore</NextLink>
+        <NextLink href="/explore">
+          <Tag _hover={{ bg: 'blue.100' }} rounded="full">
+            explore
+          </Tag>
+        </NextLink>
       </HStack>
-      <Box>
+      <HStack spacing={5}>
+        <NextLink href="/collection">
+          <Button
+            leftIcon={<AiOutlinePlus size={22} />}
+            colorScheme="blue"
+            variant="outline"
+          >
+            Create
+          </Button>
+        </NextLink>
         <Avatar name="DNI9" size="md" />
-      </Box>
+      </HStack>
     </HStack>
   );
 };
