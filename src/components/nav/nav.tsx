@@ -36,7 +36,8 @@ export const Nav: React.FC<Props> = ({ user }) => {
           <Button
             leftIcon={<AiOutlinePlus size={22} />}
             colorScheme="blue"
-            variant="outline"
+            variant="solid"
+            size="sm"
           >
             Create
           </Button>
@@ -47,8 +48,7 @@ export const Nav: React.FC<Props> = ({ user }) => {
               showBorder
               name={user?.name ?? 'Anon'}
               src={user?.image ?? ''}
-              h="45px"
-              w="45px"
+              size="sm"
             />
           </AppMenu>
         ) : null}
