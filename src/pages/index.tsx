@@ -1,20 +1,15 @@
 import { SimpleGrid } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
-import { DefaultSession } from 'next-auth';
 import { getSession } from 'next-auth/react';
 
 import { CollectionCard, SnippetCard, TitleRow } from '~/components/dashboard';
 import { Meta, AppLayout } from '~/layout';
 
-type Props = {
-  user: DefaultSession['user'];
-};
-
-const Index: React.FC<Props> = ({ user }) => {
+const Index = () => {
   return (
     <>
       <Meta title="SnipShare" />
-      <AppLayout user={user}>
+      <AppLayout>
         <TitleRow href="/collections" title="My collections" />
         <SimpleGrid mt={3} columns={{ sm: 2, md: 3 }} spacing={5}>
           <CollectionCard />
@@ -35,7 +30,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!session) {
     return {
       redirect: {
-        destination: '/auth/signin',
+        destination: '/explore',
         permanent: false,
       },
     };
