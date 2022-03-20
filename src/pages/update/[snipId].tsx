@@ -112,14 +112,8 @@ export const getServerSideProps: GetServerSideProps = async ({
     },
   });
 
-  if (!snippet) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    };
-  }
+  if (!snippet) return { notFound: true };
+
   return {
     props: { snippet },
   };
