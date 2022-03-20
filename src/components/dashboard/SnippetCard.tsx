@@ -7,25 +7,21 @@ import {
   Spacer,
   Text,
 } from '@chakra-ui/react';
+import { Snippet } from '@prisma/client';
 import { motion } from 'framer-motion';
-import Highlight, { defaultProps } from 'prism-react-renderer';
+import Highlight, { defaultProps, Language } from 'prism-react-renderer';
 import theme from 'prism-react-renderer/themes/vsLight';
 import { BiGitRepoForked } from 'react-icons/bi';
 import { FaClone, FaHeart } from 'react-icons/fa';
-
-const exampleCode = `
-const AppConfig = {
-  site_name: 'SnipShare',
-  title: 'SnipShare',
-  site_url: 'https://google.com',
-  description: 'Create, Share and explore code snippets',
-  locale: 'en',
-};
-`.trim();
+import { format } from 'timeago.js';
 
 const MotionBox = motion<BoxProps>(Box);
 
-export const SnippetCard = () => {
+type Props = {
+  snippet: Snippet;
+};
+
+export const SnippetCard: React.FC<Props> = ({ snippet }) => {
   return (
     <MotionBox
       whileHover={{ scale: 1.01 }}
@@ -41,7 +37,7 @@ export const SnippetCard = () => {
       boxShadow="md"
     >
       <HStack>
-        <Heading size="md">Javascript one liner</Heading>
+        <Heading size="md">{snippet.title}</Heading>
         <Spacer />
         <IconButton
           variant="ghost"
@@ -63,13 +59,13 @@ export const SnippetCard = () => {
         />
       </HStack>
       <Text color="gray" fontSize="sm">
-        2 days ago
+        {format(snippet.updatedAt)}
       </Text>
       <Box p={2} mt={2}>
         <Highlight
           {...defaultProps}
-          code={exampleCode}
-          language="javascript"
+          code={snippet.content}
+          language={snippet.language as Language}
           theme={theme}
         >
           {({ className, style, tokens, getLineProps, getTokenProps }) => (

@@ -1,11 +1,19 @@
 import { SimpleGrid } from '@chakra-ui/react';
+import type { Snippet } from '@prisma/client';
 import { GetServerSideProps } from 'next';
+import type { DefaultSession } from 'next-auth';
 import { getSession } from 'next-auth/react';
 
 import { CollectionCard, SnippetCard, TitleRow } from '~/components/dashboard';
 import { Meta, AppLayout } from '~/layout';
+import { prisma } from '~/lib/prisma';
 
-const Index = () => {
+type Props = {
+  user: DefaultSession['user'];
+  snippets: Snippet[];
+};
+
+const Index = ({ snippets }: Props) => {
   return (
     <>
       <Meta title="SnipShare" />
@@ -17,8 +25,9 @@ const Index = () => {
         </SimpleGrid>
         <TitleRow href="/snippets" title="Recent snippets" />
         <SimpleGrid my={3} columns={{ lg: 2 }} spacing={5}>
-          <SnippetCard />
-          <SnippetCard />
+          {snippets.map(snippet => (
+            <SnippetCard key={snippet.id} snippet={snippet} />
+          ))}
         </SimpleGrid>
       </AppLayout>
     </>
@@ -36,8 +45,34 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
+  const snippets = await prisma.snippet.findMany({
+    where: {
+      user: {
+        email: session?.user?.email,
+      },
+    },
+    orderBy: {
+      updatedAt: 'desc',
+    },
+    select: {
+      title: true,
+      content: true,
+      language: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+    take: 6,
+  });
+
   return {
-    props: { user: session.user },
+    props: {
+      user: session.user,
+      snippets: snippets.map(snippet => ({
+        ...snippet,
+        createdAt: snippet.updatedAt.toISOString(),
+        updatedAt: snippet.updatedAt.toISOString(),
+      })),
+    },
   };
 };
 
