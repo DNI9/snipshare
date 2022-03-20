@@ -16,15 +16,20 @@ import theme from 'prism-react-renderer/themes/vsLight';
 import { BiGitRepoForked } from 'react-icons/bi';
 import { FaClone, FaHeart } from 'react-icons/fa';
 import { IoMdDoneAll } from 'react-icons/io';
+import { MdEdit } from 'react-icons/md';
 import { format } from 'timeago.js';
 
 const MotionBox = motion<BoxProps>(Box);
 
 type Props = {
   snippet: Snippet;
+  isSnippetOwner?: boolean;
 };
 
-export const SnippetCard: React.FC<Props> = ({ snippet }) => {
+export const SnippetCard: React.FC<Props> = ({
+  snippet,
+  isSnippetOwner = false,
+}) => {
   const { hasCopied, onCopy } = useClipboard(snippet.content);
 
   return (
@@ -44,14 +49,25 @@ export const SnippetCard: React.FC<Props> = ({ snippet }) => {
       <HStack>
         <Heading size="md">{snippet.title}</Heading>
         <Spacer />
-        <Tooltip label="Fork snippet" placement="top">
-          <IconButton
-            variant="ghost"
-            aria-label="Fork snippet"
-            fontSize="lg"
-            icon={<BiGitRepoForked />}
-          />
-        </Tooltip>
+        {!isSnippetOwner ? (
+          <Tooltip label="Fork snippet" placement="top">
+            <IconButton
+              variant="ghost"
+              aria-label="Fork snippet"
+              fontSize="lg"
+              icon={<BiGitRepoForked />}
+            />
+          </Tooltip>
+        ) : (
+          <Tooltip label="Edit snippet" placement="top">
+            <IconButton
+              variant="ghost"
+              aria-label="Edit snippet"
+              fontSize="lg"
+              icon={<MdEdit />}
+            />
+          </Tooltip>
+        )}
         <Tooltip label="Like this snippet" placement="top">
           <IconButton
             variant="ghost"

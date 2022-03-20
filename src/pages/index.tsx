@@ -26,7 +26,7 @@ const Index = ({ snippets }: Props) => {
         <TitleRow href="/snippets" title="Recent snippets" />
         <SimpleGrid my={3} columns={{ lg: 2 }} spacing={5}>
           {snippets.map(snippet => (
-            <SnippetCard key={snippet.id} snippet={snippet} />
+            <SnippetCard key={snippet.id} snippet={snippet} isSnippetOwner />
           ))}
         </SimpleGrid>
       </AppLayout>
