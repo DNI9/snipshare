@@ -55,6 +55,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       updatedAt: 'desc',
     },
     select: {
+      id: true,
       title: true,
       content: true,
       language: true,
