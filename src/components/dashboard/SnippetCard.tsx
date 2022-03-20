@@ -19,6 +19,8 @@ import { IoMdDoneAll } from 'react-icons/io';
 import { MdEdit } from 'react-icons/md';
 import { format } from 'timeago.js';
 
+import { NextLink } from '../core';
+
 const MotionBox = motion<BoxProps>(Box);
 
 type Props = {
@@ -59,14 +61,16 @@ export const SnippetCard: React.FC<Props> = ({
             />
           </Tooltip>
         ) : (
-          <Tooltip label="Edit snippet" placement="top">
-            <IconButton
-              variant="ghost"
-              aria-label="Edit snippet"
-              fontSize="lg"
-              icon={<MdEdit />}
-            />
-          </Tooltip>
+          <NextLink href={`/update/${snippet.id}`}>
+            <Tooltip label="Edit snippet" placement="top">
+              <IconButton
+                variant="ghost"
+                aria-label="Edit snippet"
+                fontSize="lg"
+                icon={<MdEdit />}
+              />
+            </Tooltip>
+          </NextLink>
         )}
         <Tooltip label="Like this snippet" placement="top">
           <IconButton
