@@ -6,6 +6,8 @@ import {
   IconButton,
   Spacer,
   Text,
+  Tooltip,
+  useClipboard,
 } from '@chakra-ui/react';
 import { Snippet } from '@prisma/client';
 import { motion } from 'framer-motion';
@@ -13,6 +15,7 @@ import Highlight, { defaultProps, Language } from 'prism-react-renderer';
 import theme from 'prism-react-renderer/themes/vsLight';
 import { BiGitRepoForked } from 'react-icons/bi';
 import { FaClone, FaHeart } from 'react-icons/fa';
+import { IoMdDoneAll } from 'react-icons/io';
 import { format } from 'timeago.js';
 
 const MotionBox = motion<BoxProps>(Box);
@@ -22,6 +25,8 @@ type Props = {
 };
 
 export const SnippetCard: React.FC<Props> = ({ snippet }) => {
+  const { hasCopied, onCopy } = useClipboard(snippet.content);
+
   return (
     <MotionBox
       whileHover={{ scale: 1.01 }}
@@ -39,24 +44,31 @@ export const SnippetCard: React.FC<Props> = ({ snippet }) => {
       <HStack>
         <Heading size="md">{snippet.title}</Heading>
         <Spacer />
-        <IconButton
-          variant="ghost"
-          aria-label="Fork snippet"
-          fontSize="lg"
-          icon={<BiGitRepoForked />}
-        />
-        <IconButton
-          variant="ghost"
-          aria-label="Like this snippet"
-          fontSize="lg"
-          icon={<FaHeart />}
-        />
-        <IconButton
-          variant="ghost"
-          aria-label="Copy snippet"
-          fontSize="lg"
-          icon={<FaClone />}
-        />
+        <Tooltip label="Fork snippet" placement="top">
+          <IconButton
+            variant="ghost"
+            aria-label="Fork snippet"
+            fontSize="lg"
+            icon={<BiGitRepoForked />}
+          />
+        </Tooltip>
+        <Tooltip label="Like this snippet" placement="top">
+          <IconButton
+            variant="ghost"
+            aria-label="Like this snippet"
+            fontSize="lg"
+            icon={<FaHeart />}
+          />
+        </Tooltip>
+        <Tooltip label="Copy snippet" placement="top">
+          <IconButton
+            onClick={onCopy}
+            variant="ghost"
+            aria-label="Copy snippet"
+            fontSize="lg"
+            icon={hasCopied ? <IoMdDoneAll /> : <FaClone />}
+          />
+        </Tooltip>
       </HStack>
       <Text color="gray" fontSize="sm">
         {format(snippet.updatedAt)}
@@ -80,7 +92,7 @@ export const SnippetCard: React.FC<Props> = ({ snippet }) => {
               style={style}
             >
               {tokens.map((line, i) => (
-                <div {...getLineProps({ line, key: i })} key={i}>
+                <div key={i} {...getLineProps({ line, key: i })}>
                   {line.map((token, key) => (
                     <span key={key} {...getTokenProps({ token, key })} />
                   ))}
