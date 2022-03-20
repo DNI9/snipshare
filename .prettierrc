@@ -3,5 +3,5 @@
   "useTabs": false,
   "arrowParens": "avoid",
   "bracketSameLine": false,
-  "singleQuote": false
+  "singleQuote": true
 }
