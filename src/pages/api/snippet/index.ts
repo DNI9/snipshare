@@ -36,15 +36,66 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
+// GET /api/snippet
+const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const session = await getSession({ req });
+    if (!session) return res.status(401).send({ message: 'Unauthorized' });
+
+    const snippets = await prisma.snippet.findMany({
+      where: {
+        user: {
+          email: session?.user?.email,
+        },
+      },
+    });
+    return res.json(snippets);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ errors: 'something bad happened' });
+  }
+};
+
+// Update snippet
+const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { snipId } = req.query;
+  const session = await getSession({ req });
+  if (!session) return res.status(401).send({ message: 'Unauthorized' });
+
+  const snippet = await SnippetSchema.validate(req.body);
+  const { title, isPrivate, content, description, language } = snippet;
+
+  const updatedSnippet = await prisma.snippet.update({
+    where: { id: Number(snipId) },
+    data: {
+      title,
+      content,
+      description,
+      language,
+      isPrivate,
+    },
+  });
+
+  return res.json(updatedSnippet);
+};
+
 export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === 'POST') {
-    handlePOST(req, res);
-  } else {
-    throw new Error(
-      `The HTTP ${req.method} method is not supported at this route.`
-    );
+  switch (req.method) {
+    case 'POST': {
+      return handlePOST(req, res);
+    }
+    case 'GET': {
+      return handleGET(req, res);
+    }
+    case 'PUT': {
+      return handlePUT(req, res);
+    }
+    default:
+      throw new Error(
+        `The HTTP ${req.method} method is not supported at this route.`
+      );
   }
 }
