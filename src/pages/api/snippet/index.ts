@@ -58,25 +58,33 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Update snippet
 const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { snipId } = req.query;
-  const session = await getSession({ req });
-  if (!session) return res.status(401).send({ message: 'Unauthorized' });
+  try {
+    const { snipId } = req.query;
+    const session = await getSession({ req });
+    if (!session) return res.status(401).send({ message: 'Unauthorized' });
 
-  const snippet = await SnippetSchema.validate(req.body);
-  const { title, isPrivate, content, description, language } = snippet;
+    const snippet = await SnippetSchema.validate(req.body);
+    const { title, isPrivate, content, description, language } = snippet;
 
-  const updatedSnippet = await prisma.snippet.update({
-    where: { id: Number(snipId) },
-    data: {
-      title,
-      content,
-      description,
-      language,
-      isPrivate,
-    },
-  });
+    const updatedSnippet = await prisma.snippet.update({
+      where: { id: Number(snipId) },
+      data: {
+        title,
+        content,
+        description,
+        language,
+        isPrivate,
+      },
+    });
 
-  return res.json(updatedSnippet);
+    return res.json({ id: updatedSnippet.id });
+  } catch (error) {
+    if (error instanceof yup.ValidationError) {
+      return res.status(400).json({ errors: error.errors });
+    }
+    console.error(error);
+    return res.status(500).json({ errors: 'something bad happened' });
+  }
 };
 
 export default async function handle(
