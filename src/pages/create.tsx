@@ -3,6 +3,7 @@ import { FormikHelpers } from 'formik';
 import * as yup from 'yup';
 
 import { SnippetForm } from '~/components/forms';
+import { SITE_URL } from '~/constants';
 import { Meta, AppLayout } from '~/layout';
 import { SnippetSchema } from '~/schema/snippet';
 
@@ -34,7 +35,7 @@ export default function CreateSnippet() {
     actions: FormikHelpers<SnippetType>
   ) {
     try {
-      const res = await fetch(`http://localhost:3000/api/snippet`, {
+      const res = await fetch(`${SITE_URL}/api/snippet`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),

@@ -6,6 +6,7 @@ import { getSession } from 'next-auth/react';
 import * as yup from 'yup';
 
 import { SnippetForm } from '~/components/forms';
+import { SITE_URL } from '~/constants';
 import { Meta, AppLayout } from '~/layout';
 import { prisma } from '~/lib/prisma';
 import { SnippetSchema } from '~/schema/snippet';
@@ -35,14 +36,11 @@ export default function UpdateSnippet({ snippet }: Props) {
     actions: FormikHelpers<SnippetType>
   ) {
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/snippet?snipId=${snippet.id}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(values),
-        }
-      );
+      const res = await fetch(`${SITE_URL}/api/snippet?snipId=${snippet.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
       if (res.ok) {
         toast({
           title: 'Snippet updated.',
