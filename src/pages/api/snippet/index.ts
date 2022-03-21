@@ -44,8 +44,14 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const snippets = await prisma.snippet.findMany({
       where: {
-        user: {
-          email: session?.user?.email,
+        user: { id: session.user.id },
+      },
+      include: {
+        likes: {
+          select: { userId: true },
+          where: {
+            user: { id: session.user.id },
+          },
         },
       },
     });
