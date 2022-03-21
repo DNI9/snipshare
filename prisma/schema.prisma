@@ -13,7 +13,7 @@ model Snippet {
   description  String?
   language     String
   content      String
-  likes        Int?        @default(0)
+  likes        Like[]
   isPrivate    Boolean?    @default(true) @map("is_private")
   forks        Fork[]
   userId       Int
@@ -25,6 +25,15 @@ model Snippet {
 
   @@index([title])
   @@map("snippets")
+}
+
+model Like {
+  id        Int     @id @default(autoincrement())
+  snippet   Snippet @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  snippetId Int
+  users     User[]
+
+  @@map("likes")
 }
 
 model Collection {
@@ -69,6 +78,7 @@ model User {
   snippets      Snippet[]
   forks         Fork[]
   collections   Collection[]
+  likes         Like[]
 
   @@map(name: "users")
 }
