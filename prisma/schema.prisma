@@ -28,10 +28,13 @@ model Snippet {
 }
 
 model Like {
-  id        Int     @id @default(autoincrement())
-  snippet   Snippet @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  snippet   Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
   snippetId Int
-  users     User[]
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
 
   @@map("likes")
 }
@@ -78,7 +81,7 @@ model User {
   snippets      Snippet[]
   forks         Fork[]
   collections   Collection[]
-  likes         Like[]
+  likedSnippets Like[]
 
   @@map(name: "users")
 }
