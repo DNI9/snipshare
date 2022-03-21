@@ -22,6 +22,13 @@ const options: NextAuthOptions = {
     }),
   ],
   adapter: PrismaAdapter(prisma),
+  callbacks: {
+    async session({ session, user }) {
+      // eslint-disable-next-line no-param-reassign
+      session.user.id = user.id;
+      return session;
+    },
+  },
 };
 
 const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options);
