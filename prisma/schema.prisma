@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Snippet {
-  id           Int         @id @default(autoincrement())
+  id           String      @id @default(cuid())
   title        String
   description  String?
   language     String
@@ -16,9 +16,9 @@ model Snippet {
   likes        Like[]
   isPrivate    Boolean?    @default(true) @map("is_private")
   forks        Fork[]
-  userId       Int
+  userId       String
   user         User        @relation(fields: [userId], references: [id])
-  collectionId Int?
+  collectionId String?
   collection   Collection? @relation(fields: [collectionId], references: [id])
   createdAt    DateTime    @default(now()) @map(name: "created_at")
   updatedAt    DateTime    @updatedAt @map(name: "updated_at")
@@ -28,10 +28,10 @@ model Snippet {
 }
 
 model Like {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
+  snippetId String
   snippet   Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
-  snippetId Int
-  userId    Int
+  userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
@@ -40,12 +40,12 @@ model Like {
 }
 
 model Collection {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(cuid())
   title       String
   description String?
   isPrivate   Boolean?  @default(true) @map("is_private")
   snippets    Snippet[]
-  userId      Int
+  userId      String
   user        User      @relation(fields: [userId], references: [id])
   createdAt   DateTime  @default(now()) @map(name: "created_at")
   updatedAt   DateTime  @updatedAt @map(name: "updated_at")
@@ -54,10 +54,10 @@ model Collection {
 }
 
 model Fork {
-  id        Int      @id @default(autoincrement())
-  snippetId Int
+  id        String   @id @default(cuid())
+  snippetId String
   snippet   Snippet  @relation(fields: [snippetId], references: [id])
-  forkerId  Int
+  forkerId  String
   forker    User     @relation(fields: [forkerId], references: [id])
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
@@ -68,7 +68,7 @@ model Fork {
 // https://next-auth.js.org/adapters/prisma
 
 model User {
-  id            Int          @id @default(autoincrement())
+  id            String       @id @default(cuid())
   name          String?
   email         String?      @unique
   username      String?      @unique
@@ -87,8 +87,8 @@ model User {
 }
 
 model Account {
-  id                 Int     @id @default(autoincrement())
-  userId             Int     @map("user_id")
+  id                 String  @id @default(cuid())
+  userId             String  @map("user_id")
   type               String
   provider           String
   providerAccountId  String  @map("provider_account_id")
@@ -109,10 +109,10 @@ model Account {
 }
 
 model Session {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(cuid())
   sessionToken String   @unique @map("session_token")
-  userId       Int      @map("user_id")
   expires      DateTime
+  userId       String   @map("user_id")
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")

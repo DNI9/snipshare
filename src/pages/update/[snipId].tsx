@@ -96,7 +96,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   const snippet = await prisma.snippet.findFirst({
     where: {
       AND: [
-        { id: Number(params?.snipId) || -1 },
+        { id: String(params?.snipId) },
         { user: { email: session.user?.email } },
       ],
     },

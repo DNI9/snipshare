@@ -67,7 +67,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     const { title, isPrivate, content, description, language } = snippet;
 
     const updatedSnippet = await prisma.snippet.update({
-      where: { id: Number(snipId) },
+      where: { id: String(snipId) },
       data: {
         title,
         content,
