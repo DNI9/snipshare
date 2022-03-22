@@ -62,5 +62,8 @@
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  }
 }
