@@ -1,5 +1,4 @@
 import { SimpleGrid } from '@chakra-ui/react';
-import type { Snippet } from '@prisma/client';
 import { GetServerSideProps } from 'next';
 import type { DefaultSession } from 'next-auth';
 import { getSession } from 'next-auth/react';
@@ -7,10 +6,11 @@ import { getSession } from 'next-auth/react';
 import { CollectionCard, SnippetCard, TitleRow } from '~/components/dashboard';
 import { Meta, AppLayout } from '~/layout';
 import { prisma } from '~/lib/prisma';
+import { SnippetWithLikes } from '~/types/snippet';
 
 type Props = {
   user: DefaultSession['user'];
-  snippets: Snippet[];
+  snippets: SnippetWithLikes[];
 };
 
 const Index = ({ snippets }: Props) => {
@@ -45,11 +45,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
-  const snippets = await prisma.snippet.findMany({
+  const data = await prisma.snippet.findMany({
     where: {
-      user: {
-        email: session?.user?.email,
-      },
+      user: { id: session.user.id },
     },
     orderBy: {
       updatedAt: 'desc',
@@ -61,6 +59,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       language: true,
       createdAt: true,
       updatedAt: true,
+      likes: {
+        select: { userId: true },
+        where: { userId: session.user.id },
+      },
     },
     take: 6,
   });
@@ -68,11 +70,16 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   return {
     props: {
       user: session.user,
-      snippets: snippets.map(snippet => ({
-        ...snippet,
-        createdAt: snippet.updatedAt.toISOString(),
-        updatedAt: snippet.updatedAt.toISOString(),
-      })),
+      snippets: data.map(snippet => {
+        const likes = snippet.likes.flatMap(x => x.userId);
+        return {
+          ...snippet,
+          createdAt: snippet.updatedAt.toISOString(),
+          updatedAt: snippet.updatedAt.toISOString(),
+          likes,
+          likedByCurrentUser: likes.includes(session.user.id),
+        };
+      }),
     },
   };
 };
