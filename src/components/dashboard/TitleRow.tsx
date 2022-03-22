@@ -15,7 +15,7 @@ export const TitleRow: React.FC<Props> = ({
   href,
 }) => {
   return (
-    <HStack justify="space-between" mt={8}>
+    <HStack justify="space-between">
       <Text fontSize="lg">{title}</Text>
       <NextLink href={href}>
         <Tag size="sm" colorScheme="blackAlpha">
