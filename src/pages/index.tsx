@@ -1,4 +1,4 @@
-import { SimpleGrid } from '@chakra-ui/react';
+import { SimpleGrid, Spacer } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import type { DefaultSession } from 'next-auth';
 import { getSession } from 'next-auth/react';
@@ -18,11 +18,13 @@ const Index = ({ snippets }: Props) => {
     <>
       <Meta title="SnipShare" />
       <AppLayout>
+        <Spacer my={5} />
         <TitleRow href="/collections" title="My collections" />
         <SimpleGrid mt={3} columns={{ sm: 2, md: 3 }} spacing={5}>
           <CollectionCard />
           <CollectionCard />
         </SimpleGrid>
+        <Spacer my={5} />
         <TitleRow href="/snippets" title="Recent snippets" />
         <SimpleGrid my={3} columns={{ lg: 2 }} spacing={5}>
           {snippets.map(snippet => (
