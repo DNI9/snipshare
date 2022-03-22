@@ -39,22 +39,53 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 // GET /api/snippet
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const session = await getSession({ req });
-    if (!session) return res.status(401).send({ message: 'Unauthorized' });
+    const { page = 1, limit = 5 } = req.query;
+    const skip = (Number(page) - 1) * Number(limit);
 
-    const snippets = await prisma.snippet.findMany({
-      where: {
-        user: { id: session.user.id },
-      },
-      include: {
-        likes: {
-          select: { userId: true },
-          where: {
-            user: { id: session.user.id },
+    const session = await getSession({ req });
+
+    let snippets;
+    if (session) {
+      snippets = await prisma.snippet.findMany({
+        where: { user: { id: session.user.id } },
+        orderBy: { updatedAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          language: true,
+          createdAt: true,
+          updatedAt: true,
+          isPrivate: true,
+          likes: {
+            select: { userId: true },
+            where: { userId: session.user.id },
           },
+          _count: { select: { likes: true } },
         },
-      },
-    });
+        take: Number(limit),
+        skip,
+      });
+    } else {
+      snippets = await prisma.snippet.findMany({
+        where: { isPrivate: false },
+        orderBy: { updatedAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          language: true,
+          createdAt: true,
+          updatedAt: true,
+          isPrivate: true,
+          user: { select: { username: true, name: true } },
+          likes: { select: { userId: true } },
+          _count: { select: { likes: true } },
+        },
+        take: Number(limit),
+        skip,
+      });
+    }
     return res.json(snippets);
   } catch (error) {
     console.error(error);
