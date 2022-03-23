@@ -25,11 +25,11 @@ import { IoMdDoneAll } from 'react-icons/io';
 import { MdEdit } from 'react-icons/md';
 import { format } from 'timeago.js';
 
-import { SnipIconButton } from '~/components/snippet';
+import { NextLink } from '~/components/core';
 import { SITE_URL } from '~/constants';
 import { SnippetWithLikes } from '~/types/snippet';
 
-import { NextLink } from '../core';
+import { SnipIconButton } from './SnipIconButton';
 
 const MotionBox = motion<BoxProps>(Box);
 

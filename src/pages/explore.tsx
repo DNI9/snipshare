@@ -2,7 +2,7 @@ import { SimpleGrid } from '@chakra-ui/react';
 import type { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
-import { SnippetCard } from '~/components/dashboard';
+import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
 import { prisma } from '~/lib/prisma';
 import { SnippetWithLikes } from '~/types/snippet';

@@ -1,1 +1,1 @@
-export * from './SnipIconButton';
+export * from './SnippetCard';

@@ -3,7 +3,8 @@ import { GetServerSideProps } from 'next';
 import type { DefaultSession } from 'next-auth';
 import { getSession } from 'next-auth/react';
 
-import { CollectionCard, SnippetCard, TitleRow } from '~/components/dashboard';
+import { CollectionCard, TitleRow } from '~/components/dashboard';
+import { SnippetCard } from '~/components/snippet';
 import { Meta, AppLayout } from '~/layout';
 import { prisma } from '~/lib/prisma';
 import { SnippetWithLikes } from '~/types/snippet';

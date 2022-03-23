@@ -1,6 +1,6 @@
 import { IconButtonProps, Tooltip, IconButton } from '@chakra-ui/react';
 
-import { NextLink } from '../core';
+import { NextLink } from '~/components/core';
 
 type SnipButtonProps = {
   href?: string;

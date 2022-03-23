@@ -2,8 +2,9 @@ import { Grid, GridItem, SimpleGrid, Spacer } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
-import { CollectionCard, SnippetCard, TitleRow } from '~/components/dashboard';
+import { CollectionCard, TitleRow } from '~/components/dashboard';
 import { ProfileSidebar } from '~/components/profile';
+import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
 import { prisma } from '~/lib/prisma';
 import { SnippetWithLikes } from '~/types/snippet';
