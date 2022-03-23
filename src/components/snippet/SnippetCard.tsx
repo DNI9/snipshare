@@ -18,15 +18,13 @@ import {
 import { motion } from 'framer-motion';
 import debounce from 'lodash.debounce';
 import { useSession } from 'next-auth/react';
-import Highlight, { defaultProps, Language } from 'prism-react-renderer';
-import theme from 'prism-react-renderer/themes/vsLight';
 import { BiGitRepoForked } from 'react-icons/bi';
 import { FaClone, FaHeart, FaLock } from 'react-icons/fa';
 import { IoMdDoneAll } from 'react-icons/io';
 import { MdEdit } from 'react-icons/md';
 import { format } from 'timeago.js';
 
-import { NextLink } from '~/components/core';
+import { NextLink, CodeHighlighter } from '~/components/core';
 import { SITE_URL } from '~/constants';
 import { SnippetWithLikes } from '~/types/snippet';
 
@@ -178,33 +176,7 @@ export const SnippetCard: React.FC<Props> = ({
       </HStack>
 
       <Box p={2} mt={2}>
-        <Highlight
-          {...defaultProps}
-          code={snippet.content}
-          language={snippet.language as Language}
-          theme={theme}
-        >
-          {({ className, style, tokens, getLineProps, getTokenProps }) => (
-            <Box
-              border="1px"
-              borderColor="gray.100"
-              p={2}
-              rounded="md"
-              as="pre"
-              overflowX="auto"
-              className={className}
-              style={style}
-            >
-              {tokens.map((line, i) => (
-                <div key={i} {...getLineProps({ line, key: i })}>
-                  {line.map((token, key) => (
-                    <span key={key} {...getTokenProps({ token, key })} />
-                  ))}
-                </div>
-              ))}
-            </Box>
-          )}
-        </Highlight>
+        <CodeHighlighter snippet={snippet} />
       </Box>
     </MotionBox>
   );
