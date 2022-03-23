@@ -5,16 +5,15 @@ import {
   Box,
   Heading,
   HStack,
-  IconButton,
   Spacer,
   Text,
-  Tooltip,
   useBoolean,
   useClipboard,
   useToast,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import debounce from 'lodash.debounce';
+import { useSession } from 'next-auth/react';
 import Highlight, { defaultProps, Language } from 'prism-react-renderer';
 import theme from 'prism-react-renderer/themes/vsLight';
 import { BiGitRepoForked } from 'react-icons/bi';
@@ -23,10 +22,9 @@ import { IoMdDoneAll } from 'react-icons/io';
 import { MdEdit } from 'react-icons/md';
 import { format } from 'timeago.js';
 
+import { SnipIconButton } from '~/components/snippet';
 import { SITE_URL } from '~/constants';
 import { SnippetWithLikes } from '~/types/snippet';
-
-import { NextLink } from '../core';
 
 const MotionBox = motion<BoxProps>(Box);
 
@@ -42,6 +40,7 @@ export const SnippetCard: React.FC<Props> = ({
   const { hasCopied, onCopy } = useClipboard(snippet.content);
   const [liked, setLiked] = useBoolean(snippet.likedByCurrentUser);
   const toast = useToast();
+  const session = useSession();
 
   const likeSnippet = async () => {
     setLiked.toggle();
@@ -86,48 +85,29 @@ export const SnippetCard: React.FC<Props> = ({
         <Heading size="md">{snippet.title}</Heading>
         <Spacer />
         {!isSnippetOwner ? (
-          <Tooltip label="Fork snippet" placement="top">
-            <IconButton
-              variant="ghost"
-              aria-label="Fork snippet"
-              fontSize="lg"
-              icon={<BiGitRepoForked />}
-            />
-          </Tooltip>
+          <>
+            {session.status === 'authenticated' ? (
+              <SnipIconButton label="Fork snippet" icon={<BiGitRepoForked />} />
+            ) : null}
+          </>
         ) : (
-          <NextLink href={`/update/${snippet.id}`}>
-            <Tooltip label="Edit snippet" placement="top">
-              <IconButton
-                variant="ghost"
-                aria-label="Edit snippet"
-                fontSize="lg"
-                icon={<MdEdit />}
-              />
-            </Tooltip>
-          </NextLink>
+          <SnipIconButton
+            href={`/update/${snippet.id}`}
+            label="Edit snippet"
+            icon={<MdEdit />}
+          />
         )}
-        <Tooltip
-          label={`${liked ? 'Dislike' : 'Like'} this snippet`}
-          placement="top"
-        >
-          <IconButton
-            onClick={debouncedLike}
-            variant="ghost"
-            aria-label="Like this snippet"
-            color={liked ? 'red.500' : 'inherit'}
-            fontSize="lg"
-            icon={<FaHeart />}
-          />
-        </Tooltip>
-        <Tooltip label="Copy snippet" placement="top">
-          <IconButton
-            onClick={onCopy}
-            variant="ghost"
-            aria-label="Copy snippet"
-            fontSize="lg"
-            icon={hasCopied ? <IoMdDoneAll /> : <FaClone />}
-          />
-        </Tooltip>
+        <SnipIconButton
+          label={`${liked ? 'Dislike' : 'Like'} snippet`}
+          icon={<FaHeart />}
+          onClick={debouncedLike}
+          iconButtonProps={{ color: liked ? 'red.500' : 'inherit' }}
+        />
+        <SnipIconButton
+          label="Copy snippet"
+          icon={hasCopied ? <IoMdDoneAll /> : <FaClone />}
+          onClick={onCopy}
+        />
       </HStack>
       <Text color="gray" fontSize="sm">
         {format(snippet.updatedAt)}
