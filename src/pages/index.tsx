@@ -6,7 +6,7 @@ import { getSession } from 'next-auth/react';
 import { CollectionCard, TitleRow } from '~/components/dashboard';
 import { SnippetCard } from '~/components/snippet';
 import { Meta, AppLayout } from '~/layout';
-import { prisma } from '~/lib/prisma';
+import { getSnippets } from '~/services/snippet';
 import { SnippetWithLikes } from '~/types/snippet';
 
 type Props = {
@@ -48,44 +48,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
-  const data = await prisma.snippet.findMany({
-    where: {
-      user: { id: session.user.id },
-    },
-    orderBy: {
-      updatedAt: 'desc',
-    },
-    select: {
-      id: true,
-      title: true,
-      content: true,
-      language: true,
-      createdAt: true,
-      updatedAt: true,
-      isPrivate: true,
-      likes: {
-        select: { userId: true },
-        where: { userId: session.user.id },
-      },
-      _count: { select: { likes: true } },
-    },
-    take: 6,
-  });
-
+  const snippets = await getSnippets(session.user.id);
   return {
-    props: {
-      user: session.user,
-      snippets: data.map(snippet => {
-        const likes = snippet.likes.flatMap(x => x.userId);
-        return {
-          ...snippet,
-          createdAt: snippet.updatedAt.toISOString(),
-          updatedAt: snippet.updatedAt.toISOString(),
-          likes,
-          likedByCurrentUser: likes.includes(session.user.id),
-        };
-      }),
-    },
+    props: { user: session.user, snippets },
   };
 };
 

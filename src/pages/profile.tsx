@@ -6,7 +6,8 @@ import { CollectionCard, TitleRow } from '~/components/dashboard';
 import { ProfileSidebar } from '~/components/profile';
 import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
-import { prisma } from '~/lib/prisma';
+import { getSnippets } from '~/services/snippet';
+import { getUserById } from '~/services/user';
 import { SnippetWithLikes } from '~/types/snippet';
 import { UserWithCounts } from '~/types/user';
 
@@ -57,52 +58,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      image: true,
-      _count: {
-        select: { snippets: true, collections: true },
-      },
-    },
-  });
-
-  const snippets = await prisma.snippet.findMany({
-    where: { user: { id: session.user.id } },
-    orderBy: { updatedAt: 'desc' },
-    select: {
-      id: true,
-      title: true,
-      content: true,
-      language: true,
-      createdAt: true,
-      updatedAt: true,
-      isPrivate: true,
-      likes: {
-        select: { userId: true },
-        where: { userId: session.user.id },
-      },
-      _count: { select: { likes: true } },
-    },
-    take: 6,
-  });
+  const user = await getUserById(session.user.id);
+  const snippets = await getSnippets(session.user.id);
 
   return {
-    props: {
-      user,
-      snippets: snippets.map(snippet => {
-        const likes = snippet.likes.flatMap(x => x.userId);
-        return {
-          ...snippet,
-          createdAt: snippet.updatedAt.toISOString(),
-          updatedAt: snippet.updatedAt.toISOString(),
-          likes,
-          likedByCurrentUser: likes.includes(session.user.id),
-        };
-      }),
-    },
+    props: { user, snippets },
   };
 };
