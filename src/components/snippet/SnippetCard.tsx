@@ -157,7 +157,16 @@ export const SnippetCard: React.FC<Props> = ({
                 )}
               </HStack>
             }
-            onClick={debouncedLike}
+            onClick={() => {
+              if (session.status === 'authenticated') debouncedLike();
+              else
+                toast({
+                  title: `Please login to like this snippet`,
+                  status: 'error',
+                  isClosable: true,
+                  position: 'top-right',
+                });
+            }}
             iconButtonProps={{ color: liked ? 'red.500' : 'inherit' }}
           />
         </HStack>
