@@ -1,12 +1,19 @@
 import { Container } from '@chakra-ui/react';
+import type { ContainerProps } from '@chakra-ui/react';
 
 import { Nav } from '~/components/nav';
 
-export const AppLayout: React.FC = ({ children }) => {
+type Props = {
+  containerProps?: ContainerProps;
+};
+
+export const AppLayout: React.FC<Props> = ({ children, containerProps }) => {
   return (
     <>
       <Nav />
-      <Container maxW="container.xl">{children}</Container>
+      <Container maxW="container.xl" {...containerProps}>
+        {children}
+      </Container>
     </>
   );
 };
