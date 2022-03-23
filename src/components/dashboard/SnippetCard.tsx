@@ -106,7 +106,10 @@ export const SnippetCard: React.FC<Props> = ({
             </Tooltip>
           </NextLink>
         )}
-        <Tooltip label="Like this snippet" placement="top">
+        <Tooltip
+          label={`${liked ? 'Dislike' : 'Like'} this snippet`}
+          placement="top"
+        >
           <IconButton
             onClick={debouncedLike}
             variant="ghost"
