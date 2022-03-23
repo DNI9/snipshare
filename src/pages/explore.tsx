@@ -19,7 +19,7 @@ export default function Explore({ snippets }: Props) {
         <SimpleGrid my={3} columns={1} spacing={5}>
           {snippets.map(snippet => (
             <SnippetCard
-              showAvatar
+              isPublic
               key={snippet.id}
               snippet={snippet}
               isSnippetOwner={snippet.isSnippetOwner}

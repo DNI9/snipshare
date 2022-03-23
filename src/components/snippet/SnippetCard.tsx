@@ -13,6 +13,7 @@ import {
   useToast,
   BoxProps,
   VStack,
+  Badge,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import debounce from 'lodash.debounce';
@@ -20,7 +21,7 @@ import { useSession } from 'next-auth/react';
 import Highlight, { defaultProps, Language } from 'prism-react-renderer';
 import theme from 'prism-react-renderer/themes/vsLight';
 import { BiGitRepoForked } from 'react-icons/bi';
-import { FaClone, FaHeart } from 'react-icons/fa';
+import { FaClone, FaHeart, FaLock } from 'react-icons/fa';
 import { IoMdDoneAll } from 'react-icons/io';
 import { MdEdit } from 'react-icons/md';
 import { format } from 'timeago.js';
@@ -36,13 +37,13 @@ const MotionBox = motion<BoxProps>(Box);
 type Props = {
   snippet: SnippetWithLikes;
   isSnippetOwner?: boolean;
-  showAvatar?: boolean;
+  isPublic?: boolean;
 };
 
 export const SnippetCard: React.FC<Props> = ({
   snippet,
   isSnippetOwner = false,
-  showAvatar = false,
+  isPublic = false,
 }) => {
   const { hasCopied, onCopy } = useClipboard(snippet.content);
   const [liked, setLiked] = useBoolean(snippet.likedByCurrentUser);
@@ -89,7 +90,7 @@ export const SnippetCard: React.FC<Props> = ({
       boxShadow="md"
     >
       <HStack>
-        {showAvatar ? (
+        {isPublic ? (
           <NextLink href={`/profile/${snippet.user?.username}`}>
             <Tooltip
               hasArrow
@@ -108,7 +109,19 @@ export const SnippetCard: React.FC<Props> = ({
           </NextLink>
         ) : null}
         <VStack align="start" spacing={1}>
-          <Heading size="md">{snippet.title}</Heading>
+          <Heading size="md">
+            {snippet.title}{' '}
+            {!isPublic && snippet.isPrivate ? (
+              <Badge
+                colorScheme="blue"
+                p={1}
+                rounded="full"
+                title="Private snippet"
+              >
+                <FaLock size={12} />
+              </Badge>
+            ) : null}
+          </Heading>
           <Text color="gray" fontSize="sm">
             {format(snippet.updatedAt)}
           </Text>

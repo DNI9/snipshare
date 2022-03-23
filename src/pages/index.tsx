@@ -62,6 +62,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       language: true,
       createdAt: true,
       updatedAt: true,
+      isPrivate: true,
       likes: {
         select: { userId: true },
         where: { userId: session.user.id },
