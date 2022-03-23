@@ -47,6 +47,8 @@ export const SnippetCard: React.FC<Props> = ({
   const [liked, setLiked] = useBoolean(snippet.likedByCurrentUser);
   const toast = useToast();
   const session = useSession();
+  const isLoggedIn = session.status === 'authenticated';
+
   // eslint-disable-next-line no-underscore-dangle
   const [likes, setLikes] = useState(snippet._count.likes);
 
@@ -110,6 +112,7 @@ export const SnippetCard: React.FC<Props> = ({
             </Tooltip>
           </NextLink>
         ) : null}
+
         <VStack align="start" spacing={1}>
           <Heading size="md">
             {snippet.title}{' '}
@@ -128,10 +131,12 @@ export const SnippetCard: React.FC<Props> = ({
             {format(snippet.updatedAt)}
           </Text>
         </VStack>
+
         <Spacer />
+
         {!isSnippetOwner ? (
           <>
-            {session.status === 'authenticated' ? (
+            {isLoggedIn ? (
               <SnipIconButton label="Fork snippet" icon={<BiGitRepoForked />} />
             ) : null}
           </>
@@ -142,32 +147,35 @@ export const SnippetCard: React.FC<Props> = ({
             icon={<MdEdit />}
           />
         )}
-        <HStack>
-          <SnipIconButton
-            label={`${liked ? 'Dislike' : 'Like'} snippet`}
-            icon={
-              <HStack px={2}>
-                <FaHeart />
-                {!!likes && (
-                  <Badge bg="transparent" fontSize="md">
-                    {likes}
-                  </Badge>
-                )}
-              </HStack>
-            }
-            onClick={() => {
-              if (session.status === 'authenticated') debouncedLike();
-              else
-                toast({
-                  title: `Please login to like this snippet`,
-                  status: 'error',
-                  isClosable: true,
-                  position: 'top-right',
-                });
-            }}
-            iconButtonProps={{ color: liked ? 'red.500' : 'inherit' }}
-          />
-        </HStack>
+        <SnipIconButton
+          label={`${liked ? 'Dislike' : 'Like'} snippet`}
+          icon={
+            <HStack px={2}>
+              <FaHeart />
+              {!!likes && (
+                <Badge bg="transparent" fontSize="md">
+                  {likes}
+                </Badge>
+              )}
+            </HStack>
+          }
+          onClick={() => {
+            if (isLoggedIn) debouncedLike();
+            else
+              toast({
+                title: `Please login to like this snippet`,
+                status: 'error',
+                isClosable: true,
+                position: 'top-right',
+              });
+          }}
+          iconButtonProps={{
+            color: liked ? 'red.500' : 'inherit',
+            disabled: !isLoggedIn,
+            title: !isLoggedIn ? 'Login to like post' : '',
+            _disabled: { color: 'gray', cursor: 'not-allowed' },
+          }}
+        />
         <SnipIconButton
           label="Copy snippet"
           icon={hasCopied ? <IoMdDoneAll /> : <FaClone />}
