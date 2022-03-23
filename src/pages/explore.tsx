@@ -19,6 +19,7 @@ export default function Explore({ snippets }: Props) {
         <SimpleGrid my={3} columns={1} spacing={5}>
           {snippets.map(snippet => (
             <SnippetCard
+              showAvatar
               key={snippet.id}
               snippet={snippet}
               isSnippetOwner={snippet.isSnippetOwner}
@@ -44,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       createdAt: true,
       updatedAt: true,
       isPrivate: true,
-      user: { select: { id: true, username: true, name: true } },
+      user: { select: { id: true, username: true, name: true, image: true } },
       likes: { select: { userId: true } },
       _count: { select: { likes: true } },
     },

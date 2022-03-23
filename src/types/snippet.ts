@@ -1,7 +1,8 @@
-import { Snippet } from '@prisma/client';
+import { Snippet, User } from '@prisma/client';
 
 export type SnippetWithLikes = Snippet & {
   likedByCurrentUser: boolean;
   likes: Array<string>;
   isSnippetOwner?: boolean;
+  user?: User;
 };

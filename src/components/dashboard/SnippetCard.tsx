@@ -1,15 +1,18 @@
 import { useCallback } from 'react';
 
-import type { BoxProps } from '@chakra-ui/layout';
 import {
+  Avatar,
   Box,
   Heading,
   HStack,
   Spacer,
   Text,
+  Tooltip,
   useBoolean,
   useClipboard,
   useToast,
+  BoxProps,
+  VStack,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import debounce from 'lodash.debounce';
@@ -26,16 +29,20 @@ import { SnipIconButton } from '~/components/snippet';
 import { SITE_URL } from '~/constants';
 import { SnippetWithLikes } from '~/types/snippet';
 
+import { NextLink } from '../core';
+
 const MotionBox = motion<BoxProps>(Box);
 
 type Props = {
   snippet: SnippetWithLikes;
   isSnippetOwner?: boolean;
+  showAvatar?: boolean;
 };
 
 export const SnippetCard: React.FC<Props> = ({
   snippet,
   isSnippetOwner = false,
+  showAvatar = false,
 }) => {
   const { hasCopied, onCopy } = useClipboard(snippet.content);
   const [liked, setLiked] = useBoolean(snippet.likedByCurrentUser);
@@ -82,7 +89,30 @@ export const SnippetCard: React.FC<Props> = ({
       boxShadow="md"
     >
       <HStack>
-        <Heading size="md">{snippet.title}</Heading>
+        {showAvatar ? (
+          <NextLink href={`/profile/${snippet.user?.username}`}>
+            <Tooltip
+              hasArrow
+              label={`Open ${snippet.user?.username}'s profile`}
+              placement="top"
+            >
+              <Avatar
+                loading="lazy"
+                cursor="pointer"
+                showBorder
+                name={snippet.user?.name ?? ''}
+                src={snippet.user?.image ?? ''}
+                size="md"
+              />
+            </Tooltip>
+          </NextLink>
+        ) : null}
+        <VStack align="start" spacing={1}>
+          <Heading size="md">{snippet.title}</Heading>
+          <Text color="gray" fontSize="sm">
+            {format(snippet.updatedAt)}
+          </Text>
+        </VStack>
         <Spacer />
         {!isSnippetOwner ? (
           <>
@@ -109,9 +139,7 @@ export const SnippetCard: React.FC<Props> = ({
           onClick={onCopy}
         />
       </HStack>
-      <Text color="gray" fontSize="sm">
-        {format(snippet.updatedAt)}
-      </Text>
+
       <Box p={2} mt={2}>
         <Highlight
           {...defaultProps}
