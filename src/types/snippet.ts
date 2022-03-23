@@ -5,4 +5,5 @@ export type SnippetWithLikes = Snippet & {
   likes: Array<string>;
   isSnippetOwner?: boolean;
   user?: User;
+  _count: { likes: number };
 };

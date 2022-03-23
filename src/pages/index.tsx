@@ -67,6 +67,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
         select: { userId: true },
         where: { userId: session.user.id },
       },
+      _count: { select: { likes: true } },
     },
     take: 6,
   });

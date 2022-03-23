@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
   Avatar,
@@ -49,6 +49,8 @@ export const SnippetCard: React.FC<Props> = ({
   const [liked, setLiked] = useBoolean(snippet.likedByCurrentUser);
   const toast = useToast();
   const session = useSession();
+  // eslint-disable-next-line no-underscore-dangle
+  const [likes, setLikes] = useState(snippet._count.likes);
 
   const likeSnippet = async () => {
     setLiked.toggle();
@@ -57,6 +59,8 @@ export const SnippetCard: React.FC<Props> = ({
         method: 'PUT',
       });
       if (!res.ok) throw new Error('Failed to like/dislike snippet');
+      const data: { liked: boolean } = await res.json();
+      setLikes(count => (data.liked ? count + 1 : count - 1));
     } catch (error) {
       toast({
         title: `Failed to ${
@@ -140,12 +144,23 @@ export const SnippetCard: React.FC<Props> = ({
             icon={<MdEdit />}
           />
         )}
-        <SnipIconButton
-          label={`${liked ? 'Dislike' : 'Like'} snippet`}
-          icon={<FaHeart />}
-          onClick={debouncedLike}
-          iconButtonProps={{ color: liked ? 'red.500' : 'inherit' }}
-        />
+        <HStack>
+          <SnipIconButton
+            label={`${liked ? 'Dislike' : 'Like'} snippet`}
+            icon={
+              <HStack px={2}>
+                <FaHeart />
+                {!!likes && (
+                  <Badge bg="transparent" fontSize="md">
+                    {likes}
+                  </Badge>
+                )}
+              </HStack>
+            }
+            onClick={debouncedLike}
+            iconButtonProps={{ color: liked ? 'red.500' : 'inherit' }}
+          />
+        </HStack>
         <SnipIconButton
           label="Copy snippet"
           icon={hasCopied ? <IoMdDoneAll /> : <FaClone />}
