@@ -1,4 +1,4 @@
-import { Container, useToast } from '@chakra-ui/react';
+import { Container } from '@chakra-ui/react';
 import { Snippet } from '@prisma/client';
 import { FormikHelpers } from 'formik';
 import { GetServerSideProps } from 'next';
@@ -8,6 +8,7 @@ import * as yup from 'yup';
 import { SnippetForm } from '~/components/forms';
 import { SITE_URL } from '~/constants';
 import { Meta, AppLayout } from '~/layout';
+import { useToaster } from '~/lib/hooks';
 import { prisma } from '~/lib/prisma';
 import { SnippetSchema } from '~/schema/snippet';
 
@@ -21,7 +22,7 @@ type Props = {
 };
 
 export default function UpdateSnippet({ snippet }: Props) {
-  const toast = useToast();
+  const { showErrorToast, showSuccessToast } = useToaster();
 
   const initialValues: SnippetType = {
     title: snippet.title,
@@ -41,24 +42,11 @@ export default function UpdateSnippet({ snippet }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       });
-      if (res.ok) {
-        toast({
-          title: 'Snippet updated.',
-          status: 'success',
-          isClosable: true,
-          position: 'top-right',
-        });
-      } else {
-        throw new Error(res.statusText || 'Something went wrong');
-      }
+      if (res.ok) showSuccessToast('Snippet updated.');
+      else throw new Error(res.statusText || 'Something went wrong');
     } catch (error) {
       console.error(error);
-      toast({
-        title: 'Failed to update snippet',
-        status: 'error',
-        isClosable: true,
-        position: 'top-right',
-      });
+      showErrorToast('Failed to update snippet');
     } finally {
       actions.setSubmitting(false);
     }

@@ -10,7 +10,6 @@ import {
   Tooltip,
   useBoolean,
   useClipboard,
-  useToast,
   BoxProps,
   VStack,
   Badge,
@@ -25,6 +24,7 @@ import { MdEdit } from 'react-icons/md';
 import { format } from 'timeago.js';
 
 import { NextLink, CodeHighlighter } from '~/components/core';
+import { useToaster } from '~/lib/hooks';
 import { forkSnippet } from '~/services/client/fork';
 import { likeSnippet } from '~/services/client/like';
 import { SnippetWithLikes } from '~/types/snippet';
@@ -46,7 +46,7 @@ export const SnippetCard: React.FC<Props> = ({
 }) => {
   const { hasCopied, onCopy } = useClipboard(snippet.content);
   const [liked, setLiked] = useBoolean(snippet.likedByCurrentUser);
-  const toast = useToast();
+  const { showErrorToast, showSuccessToast } = useToaster();
   const session = useSession();
   const isLoggedIn = session.status === 'authenticated';
 
@@ -59,28 +59,16 @@ export const SnippetCard: React.FC<Props> = ({
       snippet.id,
       data => setLikes(count => (data.liked ? count + 1 : count - 1)),
       () => {
-        toast({
-          title: `Failed to ${
-            snippet.likedByCurrentUser ? 'dislike' : 'like'
-          } snippet`,
-          status: 'error',
-          isClosable: true,
-          position: 'top-right',
-        });
+        showErrorToast(
+          `Failed to ${snippet.likedByCurrentUser ? 'dislike' : 'like'} snippet`
+        );
         setLiked.toggle();
       }
     );
   };
 
   const handleFork = () => {
-    forkSnippet(snippet, () => {
-      toast({
-        title: `Snippet forked`,
-        status: 'success',
-        isClosable: true,
-        position: 'top-right',
-      });
-    });
+    forkSnippet(snippet, () => showSuccessToast(`Snippet forked`));
   };
 
   const debouncedLike = useCallback(
@@ -174,13 +162,7 @@ export const SnippetCard: React.FC<Props> = ({
           }
           onClick={() => {
             if (isLoggedIn) debouncedLike();
-            else
-              toast({
-                title: `Please login to like this snippet`,
-                status: 'error',
-                isClosable: true,
-                position: 'top-right',
-              });
+            else showErrorToast(`Please login to like this snippet`);
           }}
           iconButtonProps={{
             color: liked ? 'red.500' : 'inherit',

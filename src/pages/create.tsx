@@ -1,10 +1,11 @@
-import { Container, useToast } from '@chakra-ui/react';
+import { Container } from '@chakra-ui/react';
 import { FormikHelpers } from 'formik';
 import * as yup from 'yup';
 
 import { SnippetForm } from '~/components/forms';
 import { SITE_URL } from '~/constants';
 import { Meta, AppLayout } from '~/layout';
+import { useToaster } from '~/lib/hooks';
 import { SnippetSchema } from '~/schema/snippet';
 
 type SnippetType = yup.InferType<typeof SnippetSchema>;
@@ -20,7 +21,7 @@ export const MyCode = () => {
 `.trim();
 
 export default function CreateSnippet() {
-  const toast = useToast();
+  const { showErrorToast, showSuccessToast } = useToaster();
 
   const initialValues: SnippetType = {
     title: '',
@@ -40,24 +41,11 @@ export default function CreateSnippet() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       });
-      if (res.ok) {
-        toast({
-          title: 'Snippet created.',
-          status: 'success',
-          isClosable: true,
-          position: 'top-right',
-        });
-      } else {
-        throw new Error(res.statusText || 'Something went wrong');
-      }
+      if (res.ok) showSuccessToast('Snippet created.');
+      else throw new Error(res.statusText || 'Something went wrong');
     } catch (error) {
       console.error(error);
-      toast({
-        title: 'Failed to create snippet',
-        status: 'error',
-        isClosable: true,
-        position: 'top-right',
-      });
+      showErrorToast('Failed to create snippet');
     } finally {
       actions.setSubmitting(false);
     }
