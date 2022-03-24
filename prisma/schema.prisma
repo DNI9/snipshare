@@ -8,20 +8,25 @@ datasource db {
 }
 
 model Snippet {
-  id           String      @id @default(cuid())
-  title        String
-  description  String?
-  language     String
-  content      String
-  likes        Like[]
-  isPrivate    Boolean?    @default(true) @map("is_private")
-  forks        Fork[]
-  userId       String
-  user         User        @relation(fields: [userId], references: [id])
-  collectionId String?
-  collection   Collection? @relation(fields: [collectionId], references: [id])
-  createdAt    DateTime    @default(now()) @map(name: "created_at")
-  updatedAt    DateTime    @updatedAt @map(name: "updated_at")
+  id              String      @id @default(cuid())
+  title           String
+  description     String?
+  language        String
+  content         String
+  likes           Like[]
+  isPrivate       Boolean?    @default(true) @map("is_private")
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  //
+  collectionId    String?
+  collection      Collection? @relation(fields: [collectionId], references: [id])
+  //
+  sourceSnippetId String?     @map("source_snippet_id")
+  sourceSnippet   Snippet?    @relation("SnippetToSnippet", fields: [sourceSnippetId], references: [id])
+  forks           Snippet[]   @relation("SnippetToSnippet")
+  //
+  createdAt       DateTime    @default(now()) @map(name: "created_at")
+  updatedAt       DateTime    @updatedAt @map(name: "updated_at")
 
   @@index([title])
   @@map("snippets")
@@ -53,18 +58,6 @@ model Collection {
   @@map("collections")
 }
 
-model Fork {
-  id        String   @id @default(cuid())
-  snippetId String
-  snippet   Snippet  @relation(fields: [snippetId], references: [id])
-  forkerId  String
-  forker    User     @relation(fields: [forkerId], references: [id])
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-
-  @@map("forks")
-}
-
 // https://next-auth.js.org/adapters/prisma
 
 model User {
@@ -79,7 +72,6 @@ model User {
   accounts      Account[]
   sessions      Session[]
   snippets      Snippet[]
-  forks         Fork[]
   collections   Collection[]
   likedSnippets Like[]
 

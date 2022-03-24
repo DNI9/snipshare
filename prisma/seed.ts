@@ -9,8 +9,8 @@ const getRandomFromArray = <T = any>(arr: Array<T>) =>
   arr[Math.floor(Math.random() * arr.length)];
 
 const USERS = [
-  { name: 'dni9', id: 'cl10yr8kl00107wacydab8cn5' },
-  { name: 'ind', id: 'cl13elwsb0357aoaca9nortaj' },
+  { name: 'dni9', id: 'cl156kwp30016orachbjhixom' },
+  { name: 'ind', id: 'cl156y37r0117orac0h4z7te5' },
 ];
 
 async function main() {
