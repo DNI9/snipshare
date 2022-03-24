@@ -26,6 +26,7 @@ import { format } from 'timeago.js';
 
 import { NextLink, CodeHighlighter } from '~/components/core';
 import { SITE_URL } from '~/constants';
+import { forkSnippet } from '~/services/client/fork';
 import { SnippetWithLikes } from '~/types/snippet';
 
 import { SnipIconButton } from './SnipIconButton';
@@ -72,6 +73,17 @@ export const SnippetCard: React.FC<Props> = ({
       });
       setLiked.toggle();
     }
+  };
+
+  const handleFork = () => {
+    forkSnippet(snippet, () => {
+      toast({
+        title: `Snippet forked`,
+        status: 'success',
+        isClosable: true,
+        position: 'top-right',
+      });
+    });
   };
 
   const debouncedLike = useCallback(
@@ -137,7 +149,11 @@ export const SnippetCard: React.FC<Props> = ({
         {!isSnippetOwner ? (
           <>
             {isLoggedIn ? (
-              <SnipIconButton label="Fork snippet" icon={<BiGitRepoForked />} />
+              <SnipIconButton
+                label="Fork snippet"
+                onClick={handleFork}
+                icon={<BiGitRepoForked />}
+              />
             ) : null}
           </>
         ) : (
