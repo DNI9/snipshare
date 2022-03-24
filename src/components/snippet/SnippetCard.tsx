@@ -25,8 +25,8 @@ import { MdEdit } from 'react-icons/md';
 import { format } from 'timeago.js';
 
 import { NextLink, CodeHighlighter } from '~/components/core';
-import { SITE_URL } from '~/constants';
 import { forkSnippet } from '~/services/client/fork';
+import { likeSnippet } from '~/services/client/like';
 import { SnippetWithLikes } from '~/types/snippet';
 
 import { SnipIconButton } from './SnipIconButton';
@@ -53,26 +53,23 @@ export const SnippetCard: React.FC<Props> = ({
   // eslint-disable-next-line no-underscore-dangle
   const [likes, setLikes] = useState(snippet._count.likes);
 
-  const likeSnippet = async () => {
+  const handleLike = () => {
     setLiked.toggle();
-    try {
-      const res = await fetch(`${SITE_URL}/api/snippet/like/${snippet.id}`, {
-        method: 'PUT',
-      });
-      if (!res.ok) throw new Error('Failed to like/dislike snippet');
-      const data: { liked: boolean } = await res.json();
-      setLikes(count => (data.liked ? count + 1 : count - 1));
-    } catch (error) {
-      toast({
-        title: `Failed to ${
-          snippet.likedByCurrentUser ? 'dislike' : 'like'
-        } snippet`,
-        status: 'error',
-        isClosable: true,
-        position: 'top-right',
-      });
-      setLiked.toggle();
-    }
+    likeSnippet(
+      snippet.id,
+      data => setLikes(count => (data.liked ? count + 1 : count - 1)),
+      () => {
+        toast({
+          title: `Failed to ${
+            snippet.likedByCurrentUser ? 'dislike' : 'like'
+          } snippet`,
+          status: 'error',
+          isClosable: true,
+          position: 'top-right',
+        });
+        setLiked.toggle();
+      }
+    );
   };
 
   const handleFork = () => {
@@ -87,7 +84,7 @@ export const SnippetCard: React.FC<Props> = ({
   };
 
   const debouncedLike = useCallback(
-    debounce(() => likeSnippet(), 500),
+    debounce(() => handleLike(), 500),
     []
   );
 
