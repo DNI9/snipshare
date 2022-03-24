@@ -14,6 +14,7 @@ export const getSnippets = async (userId: string) => {
       createdAt: true,
       updatedAt: true,
       isPrivate: true,
+      sourceSnippetId: true,
       likes: {
         select: { userId: true },
         where: { userId },

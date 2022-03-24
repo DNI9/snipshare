@@ -3,7 +3,7 @@ import { Snippet, User } from '@prisma/client';
 type Modify<T, R> = Omit<T, keyof R> & R;
 
 export type SnippetWithLikes = Modify<
-  Omit<Snippet, 'userId' | 'collectionId' | 'sourceSnippetId'>,
+  Omit<Snippet, 'userId' | 'collectionId'>,
   {
     createdAt: string;
     updatedAt: string;

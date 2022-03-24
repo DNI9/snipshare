@@ -76,6 +76,18 @@ export const SnippetCard: React.FC<Props> = ({
     []
   );
 
+  const privateBadge = snippet.isPrivate ? (
+    <Badge colorScheme="blue" p={1} title="Private snippet">
+      <FaLock size={12} />
+    </Badge>
+  ) : null;
+
+  const forkBadge = snippet.sourceSnippetId ? (
+    <Badge colorScheme="yellow" p={1}>
+      Forked
+    </Badge>
+  ) : null;
+
   return (
     <MotionBox
       whileHover={{ scale: 1.01 }}
@@ -113,16 +125,12 @@ export const SnippetCard: React.FC<Props> = ({
         <VStack align="start" spacing={1}>
           <Heading size="md">
             {snippet.title}{' '}
-            {!isPublic && snippet.isPrivate ? (
-              <Badge
-                colorScheme="blue"
-                p={1}
-                rounded="full"
-                title="Private snippet"
-              >
-                <FaLock size={12} />
-              </Badge>
-            ) : null}
+            {!isPublic && (
+              <HStack ml={1} spacing={1} display="inline-block">
+                {privateBadge}
+                {forkBadge}
+              </HStack>
+            )}
           </Heading>
           <Text color="gray" fontSize="sm">
             {format(snippet.updatedAt)}
