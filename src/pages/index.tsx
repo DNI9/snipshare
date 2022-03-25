@@ -1,20 +1,18 @@
 import { SimpleGrid, Spacer } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
-import type { DefaultSession } from 'next-auth';
 import { getSession } from 'next-auth/react';
 
 import { CollectionCard, TitleRow } from '~/components/dashboard';
 import { SnippetCard } from '~/components/snippet';
 import { Meta, AppLayout } from '~/layout';
 import { getSnippets } from '~/services/snippet';
-import { SnippetWithLikes } from '~/types/snippet';
+import { SnippetData } from '~/types/snippet';
 
 type Props = {
-  user: DefaultSession['user'];
-  snippets: SnippetWithLikes[];
+  data: SnippetData;
 };
 
-const Index = ({ snippets }: Props) => {
+const Index = ({ data }: Props) => {
   return (
     <>
       <Meta title="SnipShare" />
@@ -28,7 +26,7 @@ const Index = ({ snippets }: Props) => {
         <Spacer my={5} />
         <TitleRow href="/snippets" title="Recent snippets" />
         <SimpleGrid my={3} columns={{ lg: 2 }} spacing={5}>
-          {snippets.map(snippet => (
+          {data.snippets.map(snippet => (
             <SnippetCard key={snippet.id} snippet={snippet} isSnippetOwner />
           ))}
         </SimpleGrid>
@@ -48,9 +46,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
-  const snippets = await getSnippets(session.user.id);
+  const data = await getSnippets(session.user.id);
   return {
-    props: { user: session.user, snippets },
+    props: { data },
   };
 };
 

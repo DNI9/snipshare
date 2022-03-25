@@ -8,15 +8,15 @@ import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
 import { getSnippets } from '~/services/snippet';
 import { getUserById } from '~/services/user';
-import { SnippetWithLikes } from '~/types/snippet';
+import { SnippetData } from '~/types/snippet';
 import { UserWithCounts } from '~/types/user';
 
 type Props = {
   user: UserWithCounts;
-  snippets: SnippetWithLikes[];
+  data: SnippetData;
 };
 
-export default function Profile({ user, snippets }: Props) {
+export default function Profile({ user, data }: Props) {
   return (
     <>
       <Meta title="Profile" />
@@ -32,7 +32,7 @@ export default function Profile({ user, snippets }: Props) {
             <Spacer my={5} />
             <TitleRow href="#" title="Snippets" />
             <SimpleGrid my={3} columns={1} spacing={5}>
-              {snippets.map(snippet => (
+              {data.snippets.map(snippet => (
                 <SnippetCard
                   key={snippet.id}
                   snippet={snippet}
@@ -59,9 +59,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   }
 
   const user = await getUserById(session.user.id);
-  const snippets = await getSnippets(session.user.id);
+  const data = await getSnippets(session.user.id);
 
   return {
-    props: { user, snippets },
+    props: { user, data },
   };
 };

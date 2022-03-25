@@ -2,11 +2,15 @@ import type { Prisma } from '@prisma/client';
 
 import { DB_PAGE_LIMIT } from '~/constants';
 import { prisma } from '~/lib/prisma';
-import { SnippetData, SnippetWithLikes } from '~/types/snippet';
+import { SnippetData } from '~/types/snippet';
 
-export const getSnippets = async (userId: string) => {
-  const data = await prisma.snippet.findMany({
-    where: { user: { id: userId } },
+export const getSnippets = async (loggedInUser: string) => {
+  const snippetWhere: Prisma.SnippetWhereInput = {
+    userId: loggedInUser,
+  };
+
+  const snippets = await prisma.snippet.findMany({
+    where: snippetWhere,
     orderBy: { updatedAt: 'desc' },
     select: {
       id: true,
@@ -21,24 +25,31 @@ export const getSnippets = async (userId: string) => {
       userId: true,
       likes: {
         select: { userId: true },
-        where: { userId },
+        where: { userId: loggedInUser },
       },
       _count: { select: { likes: true } },
     },
-    take: 6,
+    take: DB_PAGE_LIMIT,
   });
 
-  const snippets: SnippetWithLikes[] = data.map(snippet => {
-    const likes = snippet.likes.flatMap(x => x.userId);
-    return {
-      ...snippet,
-      createdAt: snippet.updatedAt.toISOString(),
-      updatedAt: snippet.updatedAt.toISOString(),
-      likes,
-      likedByCurrentUser: likes.length > 0,
-    };
-  });
-  return snippets;
+  const totalSnippets = await prisma.snippet.count({ where: snippetWhere });
+
+  const data: SnippetData = {
+    totalResults: totalSnippets,
+    totalPages: Math.ceil(totalSnippets / DB_PAGE_LIMIT),
+    snippets: snippets.map(snippet => {
+      const likes = snippet.likes.flatMap(x => x.userId);
+      return {
+        ...snippet,
+        createdAt: snippet.updatedAt.toISOString(),
+        updatedAt: snippet.updatedAt.toISOString(),
+        likes,
+        likedByCurrentUser: likes.length > 0,
+        isSnippetOwner: true,
+      };
+    }),
+  };
+  return data;
 };
 
 export const getPublicSnippets = async (
