@@ -41,10 +41,14 @@ export const getSnippets = async (userId: string) => {
   return snippets;
 };
 
-export const getPublicSnippets = async (userId?: string) => {
+export const getPublicSnippets = async (
+  loggedInUser?: string,
+  queryUserId?: string
+) => {
   const snippetWhere: Prisma.SnippetWhereInput = {
     isPrivate: false,
-    NOT: [{ userId }],
+    ...(queryUserId ? { userId: queryUserId } : {}),
+    NOT: [{ userId: loggedInUser }],
   };
 
   const snippets = await prisma.snippet.findMany({
@@ -75,8 +79,10 @@ export const getPublicSnippets = async (userId?: string) => {
     totalPages: Math.ceil(totalSnippets / DB_PAGE_LIMIT),
     snippets: snippets.map(snippet => {
       const likes = snippet.likes.flatMap(x => x.userId);
-      const likedByCurrentUser = userId ? likes.includes(userId) : false;
-      const isSnippetOwner = snippet.userId === userId;
+      const likedByCurrentUser = loggedInUser
+        ? likes.includes(loggedInUser)
+        : false;
+      const isSnippetOwner = snippet.userId === loggedInUser;
 
       return {
         ...snippet,

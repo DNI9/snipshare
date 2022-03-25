@@ -6,15 +6,16 @@ import { ProfileSidebar } from '~/components/profile';
 import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
 import { prisma } from '~/lib/prisma';
-import { SnippetWithLikes } from '~/types/snippet';
+import { getPublicSnippets } from '~/services/snippet';
+import { SnippetData } from '~/types/snippet';
 import { UserWithCounts } from '~/types/user';
 
 type Props = {
   user: UserWithCounts;
-  snippets: SnippetWithLikes[];
+  data: SnippetData;
 };
 
-export default function PublicProfile({ user, snippets }: Props) {
+export default function PublicProfile({ user, data }: Props) {
   return (
     <>
       <Meta title={`${user.name}'s Profile`} />
@@ -28,7 +29,7 @@ export default function PublicProfile({ user, snippets }: Props) {
           <ProfileSidebar user={user} />
           <GridItem>
             <SimpleGrid columns={1} spacing={5}>
-              {snippets.map(snippet => (
+              {data.snippets.map(snippet => (
                 <SnippetCard key={snippet.id} snippet={snippet} />
               ))}
             </SimpleGrid>
@@ -54,55 +55,19 @@ export const getServerSideProps: GetServerSideProps = async ({
   if (!user) return { notFound: true };
   if (session && user.id === session.user.id) {
     return {
-      redirect: {
-        destination: '/profile',
-        permanent: false,
-      },
+      redirect: { destination: '/profile', permanent: false },
     };
   }
 
-  const snippets = await prisma.snippet.findMany({
-    where: { isPrivate: false, userId: user.id },
-    orderBy: { updatedAt: 'desc' },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      content: true,
-      language: true,
-      createdAt: true,
-      updatedAt: true,
-      isPrivate: true,
-      likes: { select: { userId: true } },
-      _count: { select: { likes: true } },
-    },
-    take: 10,
-  });
-
-  const snippetCount = await prisma.snippet.count({
-    where: { isPrivate: false, userId: user.id },
-  });
+  const data = await getPublicSnippets(session?.user.id, user?.id);
 
   return {
     props: {
       user: {
         ...user,
-        _count: { snippets: snippetCount, collections: 0 }, // TODO: add collection count
+        _count: { snippets: data.totalResults, collections: 0 }, // TODO: add collection count
       },
-      snippets: snippets.map(snippet => {
-        const likes = snippet.likes.flatMap(x => x.userId);
-        const likedByCurrentUser = session
-          ? likes.includes(session.user.id)
-          : false;
-
-        return {
-          ...snippet,
-          createdAt: snippet.updatedAt.toISOString(),
-          updatedAt: snippet.updatedAt.toISOString(),
-          likes,
-          likedByCurrentUser,
-        };
-      }),
+      data,
     },
   };
 };
