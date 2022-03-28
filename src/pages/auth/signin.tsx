@@ -22,9 +22,7 @@ const Providers = ({ providers }: Props) => {
           leftIcon={<AiOutlineGithub size={25} />}
           colorScheme="blue"
           key={provider.id}
-          onClick={() =>
-            signIn(provider.id, { callbackUrl: 'http://localhost:3000/' })
-          }
+          onClick={() => signIn(provider.id)}
         >
           Continue with {provider.name}
         </Button>
