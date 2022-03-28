@@ -11,7 +11,9 @@
     "build-stats": "cross-env ANALYZE=true npm run build",
     "clean": "rimraf .next out",
     "build-types": "tsc --noEmit --pretty",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.8.6",
