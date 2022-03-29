@@ -9,6 +9,7 @@ import { prisma } from '~/lib/prisma';
 import { getPublicSnippets } from '~/services/snippet';
 import { SnippetData } from '~/types/snippet';
 import { UserWithCounts } from '~/types/user';
+import { redirect } from '~/utils/next';
 
 type Props = {
   user: UserWithCounts;
@@ -53,11 +54,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   });
 
   if (!user) return { notFound: true };
-  if (session && user.id === session.user.id) {
-    return {
-      redirect: { destination: '/profile', permanent: false },
-    };
-  }
+  if (session && user.id === session.user.id) return redirect('/profile');
 
   const data = await getPublicSnippets({
     loggedInUser: session?.user.id,

@@ -7,6 +7,7 @@ import { SnippetCard } from '~/components/snippet';
 import { Meta, AppLayout } from '~/layout';
 import { getSnippets } from '~/services/snippet';
 import { SnippetData } from '~/types/snippet';
+import { redirect } from '~/utils/next';
 
 type Props = {
   data: SnippetData;
@@ -37,14 +38,7 @@ const Index = ({ data }: Props) => {
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const session = await getSession({ req });
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/explore',
-        permanent: false,
-      },
-    };
-  }
+  if (!session) return redirect('/explore');
 
   const data = await getSnippets(session.user.id);
   return {

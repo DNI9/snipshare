@@ -11,6 +11,7 @@ import { Meta, AppLayout } from '~/layout';
 import { useToaster } from '~/lib/hooks';
 import { prisma } from '~/lib/prisma';
 import { SnippetSchema } from '~/schema/snippet';
+import { redirect } from '~/utils/next';
 
 type SnippetType = yup.InferType<typeof SnippetSchema>;
 
@@ -73,14 +74,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   req,
 }) => {
   const session = await getSession({ req });
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/auth/signin',
-        permanent: false,
-      },
-    };
-  }
+  if (!session) return redirect('/auth/signin');
+
   const snippet = await prisma.snippet.findFirst({
     where: {
       AND: [{ id: String(params?.snipId) }, { userId: session.user.id }],

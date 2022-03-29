@@ -16,6 +16,7 @@ import {
 import { AiOutlineGithub } from 'react-icons/ai';
 
 import { Meta } from '~/layout';
+import { redirect } from '~/utils/next';
 
 type Props = {
   providers: ClientSafeProvider[];
@@ -67,11 +68,7 @@ export default function SignIn({ providers }: Props) {
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const session = await getSession({ req });
-  if (session) {
-    return {
-      redirect: { destination: '/', permanent: false },
-    };
-  }
+  if (session) return redirect();
 
   const authProviders = await getProviders();
   const providers = Object.values(authProviders!);

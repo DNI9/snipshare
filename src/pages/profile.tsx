@@ -10,6 +10,7 @@ import { getSnippets } from '~/services/snippet';
 import { getUserById } from '~/services/user';
 import { SnippetData } from '~/types/snippet';
 import { UserWithCounts } from '~/types/user';
+import { redirect } from '~/utils/next';
 
 type Props = {
   user: UserWithCounts;
@@ -49,14 +50,7 @@ export default function Profile({ user, data }: Props) {
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const session = await getSession({ req });
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/auth/signin',
-        permanent: false,
-      },
-    };
-  }
+  if (!session) return redirect('/auth/signin');
 
   const user = await getUserById(session.user.id);
   const data = await getSnippets(session.user.id);
