@@ -50,9 +50,5 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   if (page > data.totalPages) return { notFound: true };
 
-  return {
-    props: {
-      data: { ...data, currentPage: page },
-    },
-  };
+  return { props: { data } };
 };
