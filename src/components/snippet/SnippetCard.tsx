@@ -175,7 +175,7 @@ export const SnippetCard: React.FC<Props> = ({
           iconButtonProps={{
             color: liked ? 'red.500' : 'inherit',
             disabled: !isLoggedIn,
-            title: !isLoggedIn ? 'Login to like post' : '',
+            title: !isLoggedIn ? 'Login to like snippet' : '',
             _disabled: { color: 'gray', cursor: 'not-allowed' },
           }}
         />
