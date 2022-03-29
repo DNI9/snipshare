@@ -32,7 +32,7 @@ const Providers = ({ providers }: Props) => {
           colorScheme="blue"
           key={provider.id}
           size={isLargerThan30em ? 'md' : 'sm'}
-          onClick={() => signIn(provider.id)}
+          onClick={() => signIn(provider.id, { callbackUrl: '/' })}
         >
           Continue with {provider.name}
         </Button>
