@@ -33,5 +33,9 @@ export default function Explore({ data }: Props) {
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const session = await getSession({ req });
-  return { props: { data: await getPublicSnippets(session?.user.id) } };
+  return {
+    props: {
+      data: await getPublicSnippets({ loggedInUser: session?.user.id }),
+    },
+  };
 };

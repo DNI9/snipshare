@@ -59,7 +59,10 @@ export const getServerSideProps: GetServerSideProps = async ({
     };
   }
 
-  const data = await getPublicSnippets(session?.user.id, user?.id);
+  const data = await getPublicSnippets({
+    loggedInUser: session?.user.id,
+    queryUserId: user?.id,
+  });
 
   return {
     props: {

@@ -4,7 +4,7 @@ import { DB_PAGE_LIMIT } from '~/constants';
 import { prisma } from '~/lib/prisma';
 import { SnippetData } from '~/types/snippet';
 
-export const getSnippets = async (loggedInUser: string) => {
+export const getSnippets = async (loggedInUser: string, skip?: number) => {
   const snippetWhere: Prisma.SnippetWhereInput = {
     userId: loggedInUser,
   };
@@ -30,6 +30,7 @@ export const getSnippets = async (loggedInUser: string) => {
       _count: { select: { likes: true } },
     },
     take: DB_PAGE_LIMIT,
+    skip,
   });
 
   const totalSnippets = await prisma.snippet.count({ where: snippetWhere });
@@ -52,10 +53,17 @@ export const getSnippets = async (loggedInUser: string) => {
   return data;
 };
 
-export const getPublicSnippets = async (
-  loggedInUser?: string,
-  queryUserId?: string
-) => {
+type PublicSnippetArgs = {
+  loggedInUser?: string;
+  queryUserId?: string;
+  skip?: number;
+};
+
+export const getPublicSnippets = async ({
+  loggedInUser,
+  queryUserId,
+  skip,
+}: PublicSnippetArgs) => {
   const snippetWhere: Prisma.SnippetWhereInput = {
     isPrivate: false,
     ...(queryUserId ? { userId: queryUserId } : {}),
@@ -81,6 +89,7 @@ export const getPublicSnippets = async (
       _count: { select: { likes: true } },
     },
     take: DB_PAGE_LIMIT,
+    skip,
   });
 
   const totalSnippets = await prisma.snippet.count({ where: snippetWhere });

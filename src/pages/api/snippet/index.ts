@@ -2,8 +2,10 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 import * as yup from 'yup';
 
+import { DB_PAGE_LIMIT } from '~/constants';
 import { prisma } from '~/lib/prisma';
 import { SnippetSchema } from '~/schema/snippet';
+import { getPublicSnippets, getSnippets } from '~/services/snippet';
 
 // POST /api/snippet
 // Required fields in body: title, language, content
@@ -39,52 +41,16 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 // GET /api/snippet
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { page = 1, limit = 5 } = req.query;
+    const { page = 1, limit = DB_PAGE_LIMIT } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
     const session = await getSession({ req });
 
     let snippets;
     if (session) {
-      snippets = await prisma.snippet.findMany({
-        where: { user: { id: session.user.id } },
-        orderBy: { updatedAt: 'desc' },
-        select: {
-          id: true,
-          title: true,
-          content: true,
-          language: true,
-          createdAt: true,
-          updatedAt: true,
-          isPrivate: true,
-          likes: {
-            select: { userId: true },
-            where: { userId: session.user.id },
-          },
-          _count: { select: { likes: true } },
-        },
-        take: Number(limit),
-        skip,
-      });
+      snippets = await getSnippets(session.user.id, skip);
     } else {
-      snippets = await prisma.snippet.findMany({
-        where: { isPrivate: false },
-        orderBy: { updatedAt: 'desc' },
-        select: {
-          id: true,
-          title: true,
-          content: true,
-          language: true,
-          createdAt: true,
-          updatedAt: true,
-          isPrivate: true,
-          user: { select: { username: true, name: true } },
-          likes: { select: { userId: true } },
-          _count: { select: { likes: true } },
-        },
-        take: Number(limit),
-        skip,
-      });
+      snippets = await getPublicSnippets({ skip });
     }
     return res.json(snippets);
   } catch (error) {
