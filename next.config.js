@@ -2,8 +2,13 @@
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
+const removeImports = require('next-remove-imports')();
 
-module.exports = withBundleAnalyzer({
+const withRemoveImports = removeImports({
+  experimental: { esmExternals: true },
+});
+
+const bundleAnalyzer = withBundleAnalyzer({
   eslint: {
     dirs: ['.'],
   },
@@ -12,3 +17,8 @@ module.exports = withBundleAnalyzer({
   basePath: '',
   reactStrictMode: true,
 });
+
+/**
+ * @type {import('next').NextConfig}
+ */
+module.exports = { ...bundleAnalyzer, ...withRemoveImports };

@@ -1,41 +1,48 @@
-import { Box } from '@chakra-ui/react';
-import Highlight, { defaultProps, Language } from 'prism-react-renderer';
-import theme from 'prism-react-renderer/themes/vsLight';
+import { Skeleton, Text } from '@chakra-ui/react';
+import CodeEditorType, {
+  TextareaCodeEditorProps,
+} from '@uiw/react-textarea-code-editor';
+import dynamic from 'next/dynamic';
 
-import { SnippetWithLikes } from '~/types/snippet';
+import { SnippetType } from '~/types/snippet';
+
+import '@uiw/react-textarea-code-editor/dist.css';
+
+const CodeEditor = dynamic(
+  () =>
+    import('@uiw/react-textarea-code-editor').then(mod => mod.default as any),
+  {
+    ssr: false,
+    loading: () => (
+      <Skeleton h={200} endColor="#f5f5f5">
+        <Text>Loading snippet...</Text>
+      </Skeleton>
+    ),
+  }
+) as typeof CodeEditorType;
 
 type Props = {
-  snippet: SnippetWithLikes;
+  snippet: Pick<SnippetType, 'content' | 'language'>;
+  editorProps?: TextareaCodeEditorProps &
+    React.RefAttributes<HTMLTextAreaElement>;
 };
 
-export const CodeHighlighter = ({ snippet }: Props) => {
+export const CodeHighlighter = ({ snippet, editorProps }: Props) => {
   return (
-    <Highlight
-      {...defaultProps}
-      code={snippet.content}
-      language={snippet.language as Language}
-      theme={theme}
-    >
-      {({ className, style, tokens, getLineProps, getTokenProps }) => (
-        <Box
-          border="1px"
-          borderColor="gray.100"
-          p={2}
-          rounded="md"
-          as="pre"
-          overflowX="auto"
-          className={className}
-          style={style}
-        >
-          {tokens.map((line, i) => (
-            <div key={i} {...getLineProps({ line, key: i })}>
-              {line.map((token, key) => (
-                <span key={key} {...getTokenProps({ token, key })} />
-              ))}
-            </div>
-          ))}
-        </Box>
-      )}
-    </Highlight>
+    <CodeEditor
+      readOnly
+      value={snippet.content}
+      language={snippet.language}
+      padding={15}
+      minHeight={25}
+      style={{
+        borderRadius: 5,
+        fontSize: 15,
+        backgroundColor: '#f5f5f5',
+        fontFamily:
+          'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+      }}
+      {...editorProps}
+    />
   );
 };
