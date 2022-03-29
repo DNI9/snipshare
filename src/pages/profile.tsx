@@ -2,6 +2,7 @@ import { Grid, GridItem, SimpleGrid, Spacer } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
+import { Pagination } from '~/components/core';
 import { CollectionCard, TitleRow } from '~/components/dashboard';
 import { ProfileSidebar } from '~/components/profile';
 import { SnippetCard } from '~/components/snippet';
@@ -41,6 +42,10 @@ export default function Profile({ user, data }: Props) {
                 />
               ))}
             </SimpleGrid>
+            <Pagination
+              totalPages={data.totalPages}
+              currentPage={data.currentPage}
+            />
           </GridItem>
         </Grid>
       </AppLayout>
@@ -48,12 +53,18 @@ export default function Profile({ user, data }: Props) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  query,
+}) => {
+  const page = Number(query.page) || 1;
   const session = await getSession({ req });
   if (!session) return redirect('/auth/signin');
 
   const user = await getUserById(session.user.id);
-  const data = await getSnippets(session.user.id);
+  const data = await getSnippets(session.user.id, page);
+
+  if (page > data.totalPages) return { notFound: true };
 
   return {
     props: { user, data },
