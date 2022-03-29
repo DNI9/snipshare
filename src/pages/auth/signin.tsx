@@ -1,4 +1,11 @@
-import { Box, Button, Container, Flex, Heading, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Heading,
+  Text,
+  useMediaQuery,
+} from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import {
   ClientSafeProvider,
@@ -15,13 +22,16 @@ type Props = {
 };
 
 const Providers = ({ providers }: Props) => {
+  const [isLargerThan30em] = useMediaQuery('(min-width: 30em)');
+
   return (
     <>
       {providers.map(provider => (
         <Button
-          leftIcon={<AiOutlineGithub size={25} />}
+          leftIcon={<AiOutlineGithub size={isLargerThan30em ? 25 : 22} />}
           colorScheme="blue"
           key={provider.id}
+          size={isLargerThan30em ? 'md' : 'sm'}
           onClick={() => signIn(provider.id)}
         >
           Continue with {provider.name}
@@ -35,29 +45,22 @@ export default function SignIn({ providers }: Props) {
   return (
     <>
       <Meta title="Login to Snipshare" />
-      <Container maxW="container.xl" minH="100vh">
-        <Flex
-          align="center"
-          justify="center"
-          minH={'100vh'}
-          flexDirection="column"
+      <Center minH="100vh" flexDirection="column">
+        <Text fontSize={['md', '2xl', '3xl']}>Create, Share and explore</Text>
+        <Heading
+          bgGradient="linear(to-r, blue.400, purple.300)"
+          bgClip="text"
+          fontSize={['5xl', '6xl', '8xl']}
+          fontWeight="extrabold"
+          as="h1"
+          size="4xl"
         >
-          <Text fontSize="2xl">Create, Share and explore</Text>
-          <Heading
-            bgGradient="linear(to-r, blue.400, purple.300)"
-            bgClip="text"
-            fontSize="8xl"
-            fontWeight="extrabold"
-            as="h1"
-            size="4xl"
-          >
-            Code Snippets
-          </Heading>
-          <Box mt={25}>
-            <Providers providers={providers} />
-          </Box>
-        </Flex>
-      </Container>
+          Code Snippets
+        </Heading>
+        <Box mt={{ base: 5, sm: 25 }}>
+          <Providers providers={providers} />
+        </Box>
+      </Center>
     </>
   );
 }
