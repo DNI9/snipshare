@@ -1,8 +1,6 @@
-import { Language } from 'prism-react-renderer';
-
 type CodeType = {
   title: string;
-  language: Language;
+  language: string;
   content: string;
   description?: string;
 };
