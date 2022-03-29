@@ -3,8 +3,9 @@ import type { Prisma } from '@prisma/client';
 import { DB_PAGE_LIMIT } from '~/constants';
 import { prisma } from '~/lib/prisma';
 import { SnippetData } from '~/types/snippet';
+import { getSkip, getTotalPages } from '~/utils/db';
 
-export const getSnippets = async (loggedInUser: string, skip?: number) => {
+export const getSnippets = async (loggedInUser: string, page: number = 1) => {
   const snippetWhere: Prisma.SnippetWhereInput = {
     userId: loggedInUser,
   };
@@ -30,14 +31,15 @@ export const getSnippets = async (loggedInUser: string, skip?: number) => {
       _count: { select: { likes: true } },
     },
     take: DB_PAGE_LIMIT,
-    skip,
+    skip: getSkip(page),
   });
 
   const totalSnippets = await prisma.snippet.count({ where: snippetWhere });
 
   const data: SnippetData = {
+    currentPage: page,
     totalResults: totalSnippets,
-    totalPages: Math.ceil(totalSnippets / DB_PAGE_LIMIT),
+    totalPages: getTotalPages(totalSnippets),
     snippets: snippets.map(snippet => {
       const likes = snippet.likes.flatMap(x => x.userId);
       return {
@@ -56,13 +58,13 @@ export const getSnippets = async (loggedInUser: string, skip?: number) => {
 type PublicSnippetArgs = {
   loggedInUser?: string;
   queryUserId?: string;
-  skip?: number;
+  page?: number;
 };
 
 export const getPublicSnippets = async ({
   loggedInUser,
   queryUserId,
-  skip,
+  page = 1,
 }: PublicSnippetArgs) => {
   const snippetWhere: Prisma.SnippetWhereInput = {
     isPrivate: false,
@@ -89,14 +91,15 @@ export const getPublicSnippets = async ({
       _count: { select: { likes: true } },
     },
     take: DB_PAGE_LIMIT,
-    skip,
+    skip: getSkip(page),
   });
 
   const totalSnippets = await prisma.snippet.count({ where: snippetWhere });
 
   const data: SnippetData = {
+    currentPage: page,
     totalResults: totalSnippets,
-    totalPages: Math.ceil(totalSnippets / DB_PAGE_LIMIT),
+    totalPages: getTotalPages(totalSnippets),
     snippets: snippets.map(snippet => {
       const likes = snippet.likes.flatMap(x => x.userId);
       const likedByCurrentUser = loggedInUser

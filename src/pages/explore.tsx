@@ -4,13 +4,12 @@ import { getSession } from 'next-auth/react';
 
 import { Pagination } from '~/components/core';
 import { SnippetCard } from '~/components/snippet';
-import { DB_PAGE_LIMIT } from '~/constants';
 import { AppLayout, Meta } from '~/layout';
 import { getPublicSnippets } from '~/services/snippet';
 import { SnippetData } from '~/types/snippet';
 
 type Props = {
-  data: SnippetData & { currentPage: number };
+  data: SnippetData;
 };
 
 export default function Explore({ data }: Props) {
@@ -46,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   const data = await getPublicSnippets({
     loggedInUser: session?.user.id,
-    skip: (page - 1) * DB_PAGE_LIMIT,
+    page,
   });
 
   if (page > data.totalPages) return { notFound: true };

@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 import * as yup from 'yup';
 
-import { DB_PAGE_LIMIT } from '~/constants';
 import { prisma } from '~/lib/prisma';
 import { SnippetSchema } from '~/schema/snippet';
 import { getPublicSnippets, getSnippets } from '~/services/snippet';
@@ -41,17 +40,13 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 // GET /api/snippet
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { page = 1, limit = DB_PAGE_LIMIT } = req.query;
-    const skip = (Number(page) - 1) * Number(limit);
-
+    const page = Number(req.query.page) || 1;
     const session = await getSession({ req });
 
-    let snippets;
-    if (session) {
-      snippets = await getSnippets(session.user.id, skip);
-    } else {
-      snippets = await getPublicSnippets({ skip });
-    }
+    const snippets = session
+      ? await getSnippets(session.user.id, page)
+      : await getPublicSnippets({ page });
+
     return res.json(snippets);
   } catch (error) {
     console.error(error);

@@ -35,5 +35,6 @@ export type SnippetType = Object.Merge<
 export type SnippetData = {
   totalResults: number;
   totalPages: number;
+  currentPage: number;
   snippets: SnippetType[];
 };
