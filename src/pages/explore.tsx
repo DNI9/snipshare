@@ -39,7 +39,12 @@ export default function Explore({ data }: Props) {
 export const getServerSideProps: GetServerSideProps = async ({
   req,
   query,
+  res,
 }) => {
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=10, stale-while-revalidate=59'
+  );
   const page = Number(query.page) || 1;
   const session = await getSession({ req });
 
