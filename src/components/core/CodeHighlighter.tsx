@@ -1,4 +1,4 @@
-import { Skeleton, Text } from '@chakra-ui/react';
+import { Skeleton, Text, useToken } from '@chakra-ui/react';
 import CodeEditorType, {
   TextareaCodeEditorProps,
 } from '@uiw/react-textarea-code-editor';
@@ -28,6 +28,8 @@ type Props = {
 };
 
 export const CodeHighlighter = ({ snippet, editorProps }: Props) => {
+  const [gray50] = useToken('colors', ['gray.50']);
+
   return (
     <CodeEditor
       readOnly
@@ -38,7 +40,7 @@ export const CodeHighlighter = ({ snippet, editorProps }: Props) => {
       style={{
         borderRadius: 5,
         fontSize: 15,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: gray50,
         fontFamily:
           'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
       }}

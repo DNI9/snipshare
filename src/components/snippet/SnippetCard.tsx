@@ -13,6 +13,7 @@ import {
   BoxProps,
   VStack,
   Badge,
+  Tag,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import debounce from 'lodash.debounce';
@@ -87,6 +88,14 @@ export const SnippetCard: React.FC<Props> = ({
       Forked
     </Badge>
   ) : null;
+
+  const [isContentBig, toggleBigContentBar] = useBoolean(
+    snippet.content.length > 450
+  );
+
+  const [content, setContent] = useState(() => {
+    return isContentBig ? snippet.content.slice(0, 450) : snippet.content;
+  });
 
   return (
     <MotionBox
@@ -186,8 +195,33 @@ export const SnippetCard: React.FC<Props> = ({
         />
       </HStack>
 
-      <Box p={2} mt={2}>
-        <CodeHighlighter snippet={snippet} />
+      <Box
+        mt={2}
+        border="2px"
+        borderColor="blue.300"
+        rounded="md"
+        pos="relative"
+      >
+        <CodeHighlighter
+          snippet={{ content, language: snippet.language }}
+          editorProps={{ readOnly: true }}
+        />
+        {isContentBig && (
+          <Tag
+            onClick={() => {
+              toggleBigContentBar.toggle();
+              setContent(snippet.content);
+            }}
+            pos="absolute"
+            top="0"
+            right="0"
+            rounded="none"
+            colorScheme="blue"
+            cursor="pointer"
+          >
+            View full snippet
+          </Tag>
+        )}
       </Box>
     </MotionBox>
   );
