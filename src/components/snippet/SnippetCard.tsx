@@ -105,8 +105,11 @@ export const SnippetCard: React.FC<Props> = ({ snippet, isPublic = false }) => {
 
       <Box
         mt={2}
+        _hover={{
+          borderColor: 'blue.300',
+        }}
         border="2px"
-        borderColor="blue.300"
+        borderColor="gray.50"
         rounded="md"
         pos="relative"
       >
