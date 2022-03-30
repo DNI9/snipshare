@@ -1,4 +1,4 @@
-import { SimpleGrid, Spacer } from '@chakra-ui/react';
+import { Grid, GridItem, SimpleGrid, Spacer } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
@@ -26,11 +26,17 @@ const Index = ({ data }: Props) => {
         </SimpleGrid>
         <Spacer my={5} />
         <TitleRow href="/snippets" title="Recent snippets" />
-        <SimpleGrid my={3} columns={{ lg: 2 }} spacing={5}>
+        <Grid
+          my={3}
+          gap={5}
+          templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }}
+        >
           {data.snippets.map(snippet => (
-            <SnippetCard key={snippet.id} snippet={snippet} isSnippetOwner />
+            <GridItem key={snippet.id}>
+              <SnippetCard snippet={snippet} isSnippetOwner />
+            </GridItem>
           ))}
-        </SimpleGrid>
+        </Grid>
       </AppLayout>
     </>
   );
