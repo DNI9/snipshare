@@ -1,82 +1,36 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import {
   Avatar,
   Box,
   Heading,
   HStack,
-  Spacer,
   Text,
   Tooltip,
   useBoolean,
-  useClipboard,
   BoxProps,
   VStack,
   Badge,
   Tag,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import debounce from 'lodash.debounce';
-import { useSession } from 'next-auth/react';
-import { BiGitRepoForked } from 'react-icons/bi';
-import { FaClone, FaHeart, FaLock } from 'react-icons/fa';
-import { IoMdDoneAll } from 'react-icons/io';
-import { MdEdit } from 'react-icons/md';
+import { FaLock } from 'react-icons/fa';
 import { format } from 'timeago.js';
 
 import { NextLink, CodeHighlighter } from '~/components/core';
-import { useToaster } from '~/lib/hooks';
-import { forkSnippet } from '~/services/client/fork';
-import { likeSnippet } from '~/services/client/like';
-import { SnippetWithLikes } from '~/types/snippet';
+import { SnippetType } from '~/types/snippet';
 
-import { SnipIconButton } from './SnipIconButton';
+import { SnippetButtons } from './SnippetButtons';
 
 const MotionBox = motion<BoxProps>(Box);
 
 type Props = {
-  snippet: SnippetWithLikes;
+  snippet: SnippetType;
   isSnippetOwner?: boolean;
   isPublic?: boolean;
 };
 
-export const SnippetCard: React.FC<Props> = ({
-  snippet,
-  isSnippetOwner = false,
-  isPublic = false,
-}) => {
-  const { hasCopied, onCopy } = useClipboard(snippet.content);
-  const [liked, setLiked] = useBoolean(snippet.likedByCurrentUser);
-  const { showErrorToast, showSuccessToast } = useToaster();
-  const session = useSession();
-  const isLoggedIn = session.status === 'authenticated';
-
-  // eslint-disable-next-line no-underscore-dangle
-  const [likes, setLikes] = useState(snippet._count.likes);
-
-  const handleLike = () => {
-    setLiked.toggle();
-    likeSnippet(
-      snippet.id,
-      data => setLikes(count => (data.liked ? count + 1 : count - 1)),
-      () => {
-        showErrorToast(
-          `Failed to ${snippet.likedByCurrentUser ? 'dislike' : 'like'} snippet`
-        );
-        setLiked.toggle();
-      }
-    );
-  };
-
-  const handleFork = () => {
-    forkSnippet(snippet, () => showSuccessToast(`Snippet forked`));
-  };
-
-  const debouncedLike = useCallback(
-    debounce(() => handleLike(), 500),
-    []
-  );
-
+export const SnippetCard: React.FC<Props> = ({ snippet, isPublic = false }) => {
   const privateBadge = snippet.isPrivate ? (
     <Badge colorScheme="blue" p={1} title="Private snippet">
       <FaLock size={12} />
@@ -131,7 +85,7 @@ export const SnippetCard: React.FC<Props> = ({
           </NextLink>
         ) : null}
 
-        <VStack align="start" spacing={1}>
+        <VStack align="start" spacing={1} w="full">
           <Heading size="md">
             {snippet.title}{' '}
             {!isPublic && (
@@ -146,53 +100,7 @@ export const SnippetCard: React.FC<Props> = ({
           </Text>
         </VStack>
 
-        <Spacer />
-
-        {!isSnippetOwner ? (
-          <>
-            {isLoggedIn ? (
-              <SnipIconButton
-                label="Fork snippet"
-                onClick={handleFork}
-                icon={<BiGitRepoForked />}
-              />
-            ) : null}
-          </>
-        ) : (
-          <SnipIconButton
-            href={`/update/${snippet.id}`}
-            label="Edit snippet"
-            icon={<MdEdit />}
-          />
-        )}
-        <SnipIconButton
-          label={`${liked ? 'Dislike' : 'Like'} snippet`}
-          icon={
-            <HStack px={2}>
-              <FaHeart />
-              {!!likes && (
-                <Badge bg="transparent" fontSize="md">
-                  {likes}
-                </Badge>
-              )}
-            </HStack>
-          }
-          onClick={() => {
-            if (isLoggedIn) debouncedLike();
-            else showErrorToast(`Please login to like this snippet`);
-          }}
-          iconButtonProps={{
-            color: liked ? 'red.500' : 'inherit',
-            disabled: !isLoggedIn,
-            title: !isLoggedIn ? 'Login to like snippet' : '',
-            _disabled: { color: 'gray', cursor: 'not-allowed' },
-          }}
-        />
-        <SnipIconButton
-          label="Copy snippet"
-          icon={hasCopied ? <IoMdDoneAll /> : <FaClone />}
-          onClick={onCopy}
-        />
+        <SnippetButtons snippet={snippet} />
       </HStack>
 
       <Box
