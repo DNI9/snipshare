@@ -1,19 +1,23 @@
 import { Grid, GridItem, SimpleGrid, Spacer } from '@chakra-ui/react';
+import { Collection } from '@prisma/client';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
+import { NextLink } from '~/components/core';
 import { CollectionCard, TitleRow } from '~/components/dashboard';
 import { SnippetCard } from '~/components/snippet';
 import { Meta, AppLayout } from '~/layout';
+import { getCollections } from '~/services/collection';
 import { getSnippets } from '~/services/snippet';
 import { SnippetData } from '~/types/snippet';
-import { redirect } from '~/utils/next';
+import { parseServerData, redirect } from '~/utils/next';
 
 type Props = {
   data: SnippetData;
+  collections: Collection[];
 };
 
-const Index = ({ data }: Props) => {
+const Index = ({ data, collections }: Props) => {
   return (
     <>
       <Meta title="SnipShare" />
@@ -21,8 +25,14 @@ const Index = ({ data }: Props) => {
         <Spacer my={5} />
         <TitleRow href="/collections" title="My collections" />
         <SimpleGrid mt={3} columns={{ sm: 2, md: 3 }} spacing={5}>
-          <CollectionCard />
-          <CollectionCard />
+          {collections.map(collection => (
+            <NextLink
+              key={collection.id}
+              href={`/collections/${collection.id}`}
+            >
+              <CollectionCard collection={collection} />
+            </NextLink>
+          ))}
         </SimpleGrid>
         <Spacer my={5} />
         <TitleRow href="/snippets" title="Recent snippets" />
@@ -46,9 +56,15 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const session = await getSession({ req });
   if (!session) return redirect('/explore');
 
-  const data = await getSnippets(session.user.id);
+  const userId = session?.user.id;
+  const data = await getSnippets(userId);
+  const collections = await getCollections(userId);
+
   return {
-    props: { data },
+    props: {
+      data,
+      collections: parseServerData(collections),
+    },
   };
 };
 

@@ -1,24 +1,27 @@
 import { Grid, GridItem, SimpleGrid, Spacer } from '@chakra-ui/react';
+import { Collection } from '@prisma/client';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
-import { Pagination } from '~/components/core';
+import { NextLink, Pagination } from '~/components/core';
 import { CollectionCard, TitleRow } from '~/components/dashboard';
 import { ProfileSidebar } from '~/components/profile';
 import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
+import { getCollections } from '~/services/collection';
 import { getSnippets } from '~/services/snippet';
 import { getUserById } from '~/services/user';
 import { SnippetData } from '~/types/snippet';
 import { UserWithCounts } from '~/types/user';
-import { redirect } from '~/utils/next';
+import { parseServerData, redirect } from '~/utils/next';
 
 type Props = {
   user: UserWithCounts;
   data: SnippetData;
+  collections: Collection[];
 };
 
-export default function Profile({ user, data }: Props) {
+export default function Profile({ user, data, collections }: Props) {
   return (
     <>
       <Meta title="Profile" />
@@ -28,8 +31,14 @@ export default function Profile({ user, data }: Props) {
           <GridItem>
             <TitleRow href="/collections" title="Collections" />
             <SimpleGrid mt={3} columns={{ sm: 2 }} spacing={5}>
-              <CollectionCard />
-              <CollectionCard />
+              {collections.map(collection => (
+                <NextLink
+                  key={collection.id}
+                  href={`/collections/${collection.id}`}
+                >
+                  <CollectionCard collection={collection} />
+                </NextLink>
+              ))}
             </SimpleGrid>
             <Spacer my={5} />
             <TitleRow href="#" title="Snippets" />
@@ -61,12 +70,18 @@ export const getServerSideProps: GetServerSideProps = async ({
   const session = await getSession({ req });
   if (!session) return redirect('/auth/signin');
 
-  const user = await getUserById(session.user.id);
-  const data = await getSnippets(session.user.id, page);
+  const userId = session?.user.id;
+  const user = await getUserById(userId);
+  const data = await getSnippets(userId, page);
+  const collections = await getCollections(userId);
 
   if (page > data.totalPages) return { notFound: true };
 
   return {
-    props: { user, data },
+    props: {
+      user,
+      data,
+      collections: parseServerData(collections),
+    },
   };
 };
