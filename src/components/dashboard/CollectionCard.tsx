@@ -1,12 +1,18 @@
 import type { StackProps } from '@chakra-ui/layout';
 import { Heading, HStack, Text, useToken, VStack } from '@chakra-ui/react';
+import { Collection } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { FaLock } from 'react-icons/fa';
 import { IoMdBookmark } from 'react-icons/io';
 
 const MotionVStack = motion<StackProps>(VStack);
 
-export const CollectionCard = () => {
+type Props = {
+  collection: Collection;
+  isActive?: boolean;
+};
+
+export const CollectionCard = ({ collection, isActive = false }: Props) => {
   const [blue200] = useToken('colors', ['blue.400']);
 
   return (
@@ -19,21 +25,21 @@ export const CollectionCard = () => {
         borderColor: 'gray.100',
       }}
       border="1px"
-      borderColor="gray.50"
+      borderColor={isActive ? 'blue.500' : 'gray.50'}
+      bg={isActive ? 'blue.50' : ''}
       boxShadow="md"
       cursor="pointer"
       rounded="md"
-      maxW={400}
       minH={120}
       p={3}
       align="start"
     >
       <HStack justify={'space-between'} align="center" w="full">
         <IoMdBookmark size={25} color={blue200} />
-        <FaLock size={12} color="gray" />
+        {collection.isPrivate && <FaLock size={12} color="gray" />}
       </HStack>
-      <Heading size="md">Web stuffs</Heading>
-      <Text>all web related snippets</Text>
+      <Heading size="md">{collection.title}</Heading>
+      {collection.description && <Text>{collection.description}</Text>}
       <Text color="gray" fontSize="sm">
         22 snippets
       </Text>
