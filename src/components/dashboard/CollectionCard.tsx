@@ -22,10 +22,10 @@ export const CollectionCard = ({ collection, isActive = false }: Props) => {
       _hover={{
         boxShadow: 'xl',
         border: '1px',
-        borderColor: 'gray.100',
+        borderColor: isActive ? 'blue.300' : 'gray.200',
       }}
       border="1px"
-      borderColor={isActive ? 'blue.500' : 'gray.50'}
+      borderColor={isActive ? 'blue.300' : 'gray.50'}
       bg={isActive ? 'blue.50' : ''}
       boxShadow="md"
       cursor="pointer"

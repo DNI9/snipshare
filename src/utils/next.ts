@@ -5,3 +5,6 @@ export const redirect = (destination: string = '/'): { redirect: Redirect } => {
     redirect: { destination, permanent: false },
   };
 };
+
+export const parseServerData = <T extends unknown>(data: T) =>
+  JSON.parse(JSON.stringify(data)) as T;
