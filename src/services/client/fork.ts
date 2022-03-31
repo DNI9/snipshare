@@ -2,14 +2,14 @@ import { InferType } from 'yup';
 
 import { SITE_URL } from '~/constants';
 import { SnippetSchema } from '~/schema/snippet';
-import { SnippetWithLikes } from '~/types/snippet';
+import { SnippetType } from '~/types/snippet';
 
 type Result = {
   forked?: boolean;
 };
 
 export const forkSnippet = async (
-  snippet: SnippetWithLikes,
+  snippet: SnippetType,
   onSuccess?: (data: Result) => void,
   onError?: (error: Error | any) => void
 ) => {
