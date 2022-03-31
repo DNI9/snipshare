@@ -2,7 +2,7 @@ import { Snippet, User } from '@prisma/client';
 import { Object } from 'ts-toolbelt';
 
 type SnippetOverwritten = Object.Overwrite<
-  Omit<Snippet, 'collectionId'>,
+  Snippet,
   { createdAt: string; updatedAt: string }
 >;
 

@@ -24,6 +24,7 @@ export const getSnippets = async (loggedInUser: string, page: number = 1) => {
       isPrivate: true,
       sourceSnippetId: true,
       userId: true,
+      collectionId: true,
       likes: {
         select: { userId: true },
         where: { userId: loggedInUser },
@@ -86,6 +87,7 @@ export const getPublicSnippets = async ({
       isPrivate: true,
       userId: true,
       sourceSnippetId: true,
+      collectionId: true,
       user: { select: { id: true, username: true, name: true, image: true } },
       likes: { select: { userId: true } },
       _count: { select: { likes: true } },
