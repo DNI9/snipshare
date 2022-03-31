@@ -1,5 +1,6 @@
-import { Avatar, Button, Heading, HStack, Tag } from '@chakra-ui/react';
+import { Avatar, Button, Heading, HStack, Spacer, Tag } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { FiLogIn } from 'react-icons/fi';
 
@@ -8,8 +9,11 @@ import { AppConfig } from '~/utils/AppConfig';
 import { NextLink } from '../core';
 import { AppMenu } from '../menu';
 
+const LINKS = ['explore', 'collections', 'snippets'];
+
 export const Nav = () => {
   const session = useSession();
+  const router = useRouter();
 
   return (
     <HStack
@@ -20,16 +24,22 @@ export const Nav = () => {
       justify={'space-between'}
       align="center"
     >
-      <HStack spacing={5}>
+      <HStack spacing={3}>
         <NextLink href="/">
           <Heading size="lg">{AppConfig.site_name}</Heading>
         </NextLink>
-        <NextLink href="/explore">
-          <Tag _hover={{ bg: 'blue.100' }} bg="transparent" rounded="full">
-            explore
-          </Tag>
-        </NextLink>
+        <Spacer mx={2} />
+        {LINKS.map(link => {
+          return !router.pathname.includes(link) ? (
+            <NextLink href={`/${link}`} key={link}>
+              <Tag _hover={{ bg: 'blue.100' }} bg="transparent" rounded="full">
+                {link}
+              </Tag>
+            </NextLink>
+          ) : null;
+        })}
       </HStack>
+
       <HStack spacing={5}>
         {session.status === 'authenticated' ? (
           <>
