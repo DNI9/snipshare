@@ -58,7 +58,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
   const userId = session?.user.id;
   const data = await getSnippets({ userId });
-  const collections = await getCollections(userId);
+  const collections = await getCollections({ userId });
 
   return {
     props: {

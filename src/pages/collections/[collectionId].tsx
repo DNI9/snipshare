@@ -73,7 +73,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   const session = await getSession({ req });
   const userId = session?.user.id;
 
-  const collections = await getCollections(userId);
+  const collections = await getCollections({ userId });
   const collectionExists = collections.findIndex(c => c.id === collectionId);
   if (collectionExists < 0) return { notFound: true };
 
