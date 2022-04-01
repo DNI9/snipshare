@@ -36,7 +36,7 @@ export default function UserProfile({ user, data, collections }: Props) {
                   {collections.map(collection => (
                     <NextLink
                       key={collection.id}
-                      href={`/collections/${user.username}/${collection.id}`}
+                      href={`/${user.username}/collection/${collection.id}`}
                     >
                       <CollectionCard collection={collection} />
                     </NextLink>
