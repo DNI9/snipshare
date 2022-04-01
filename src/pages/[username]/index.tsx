@@ -81,18 +81,18 @@ export const getServerSideProps: GetServerSideProps = async ({
   const user = await getUniqueUser({ username });
   if (!user) return { notFound: true };
 
-  const isOwner = loggedInUser !== user?.id;
+  const isOwner = loggedInUser === user?.id;
 
   const data = await getSnippets(
     {
       userId: user?.id,
-      ...(isOwner ? { isPrivate: false } : {}),
+      ...(isOwner ? {} : { isPrivate: false }),
     },
     page
   );
   const collections = await getCollections({
     userId: user?.id,
-    ...(isOwner ? { isPrivate: false } : {}),
+    ...(isOwner ? {} : { isPrivate: false }),
   });
 
   if (page > data.totalPages) return { notFound: true };

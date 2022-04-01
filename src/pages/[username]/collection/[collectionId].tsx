@@ -1,21 +1,22 @@
 import { Grid, GridItem, Heading, SimpleGrid } from '@chakra-ui/react';
-import { Collection } from '@prisma/client';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
-import { NextLink } from '~/components/core';
+import { NextLink, Pagination } from '~/components/core';
 import { CollectionCard } from '~/components/dashboard';
 import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
 import { getCollections } from '~/services/collection';
 import { getSnippets } from '~/services/snippet';
+import { getUniqueUser } from '~/services/user';
+import { CollectionWithCount } from '~/types/collection';
 import { SnippetData } from '~/types/snippet';
 import { parseServerData } from '~/utils/next';
 
 type Props = {
-  collections: Collection[];
-  snippetData: SnippetData | null;
+  collections: CollectionWithCount[];
+  snippetData: SnippetData;
 };
 
 export default function CollectionPage({ collections, snippetData }: Props) {
@@ -37,7 +38,7 @@ export default function CollectionPage({ collections, snippetData }: Props) {
               {collections.map(collection => (
                 <NextLink
                   key={collection.id}
-                  href={`/collections/${collection.id}`}
+                  href={`/${query.username}/collection/${collection.id}`}
                 >
                   <CollectionCard
                     collection={collection}
@@ -49,7 +50,7 @@ export default function CollectionPage({ collections, snippetData }: Props) {
           </GridItem>
           <GridItem>
             <SimpleGrid columns={1} spacing={3}>
-              {!snippetData ? (
+              {!snippetData.snippets.length ? (
                 <Heading>No snippets available</Heading>
               ) : (
                 snippetData.snippets.map(snippet => (
@@ -57,6 +58,11 @@ export default function CollectionPage({ collections, snippetData }: Props) {
                 ))
               )}
             </SimpleGrid>
+            <Pagination
+              totalPages={snippetData.totalPages}
+              currentPage={snippetData.currentPage}
+              explicitPath={`/${query.username}/collection/${query.collectionId}`}
+            />
           </GridItem>
         </Grid>
       </AppLayout>
@@ -67,30 +73,42 @@ export default function CollectionPage({ collections, snippetData }: Props) {
 export const getServerSideProps: GetServerSideProps = async ({
   req,
   params,
+  query,
 }) => {
+  const username = String(params?.username).trim();
   const collectionId = String(params?.collectionId).trim();
+  const page = Number(query.page) || 1;
 
   const session = await getSession({ req });
-  const userId = session?.user.id;
+  const loggedInUser = session?.user.id;
 
-  const collections = await getCollections({ userId });
+  const user = await getUniqueUser({ username });
+  if (!user) return { notFound: true };
+
+  const isOwner = loggedInUser === user?.id;
+
+  const collections = await getCollections({
+    userId: user.id,
+    ...(isOwner ? {} : { isPrivate: false }),
+  });
   const collectionExists = collections.findIndex(c => c.id === collectionId);
   if (collectionExists < 0) return { notFound: true };
 
-  const snippetData = collectionId
-    ? await getSnippets({
-        userId,
-        collectionId,
-        ...(!userId ? { isPrivate: false } : {}),
-      })
-    : null;
+  const snippetData = await getSnippets(
+    {
+      userId: user.id,
+      collectionId,
+      ...(isOwner ? {} : { isPrivate: false }),
+    },
+    page
+  );
+
+  if (page > snippetData.totalPages) return { notFound: true };
 
   return {
     props: {
       collections: parseServerData(collections),
-      snippetData: snippetData?.snippets.length
-        ? parseServerData(snippetData)
-        : null,
+      snippetData: parseServerData(snippetData),
     },
   };
 };
