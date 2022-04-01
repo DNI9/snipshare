@@ -5,13 +5,12 @@ import { prisma } from '~/lib/prisma';
 import { SnippetData } from '~/types/snippet';
 import { getSkip, getTotalPages } from '~/utils/db';
 
-export const getSnippets = async (loggedInUser: string, page: number = 1) => {
-  const snippetWhere: Prisma.SnippetWhereInput = {
-    userId: loggedInUser,
-  };
-
+export const getSnippets = async (
+  filter: Prisma.SnippetWhereInput,
+  page: number = 1
+) => {
   const snippets = await prisma.snippet.findMany({
-    where: snippetWhere,
+    where: filter,
     orderBy: { updatedAt: 'desc' },
     select: {
       id: true,
@@ -27,7 +26,7 @@ export const getSnippets = async (loggedInUser: string, page: number = 1) => {
       collectionId: true,
       likes: {
         select: { userId: true },
-        where: { userId: loggedInUser },
+        where: { userId: filter.userId },
       },
       _count: { select: { likes: true } },
     },
@@ -35,12 +34,13 @@ export const getSnippets = async (loggedInUser: string, page: number = 1) => {
     skip: getSkip(page),
   });
 
-  const totalSnippets = await prisma.snippet.count({ where: snippetWhere });
+  const totalSnippets = await prisma.snippet.count({ where: filter });
 
   const data: SnippetData = {
     currentPage: page,
     totalResults: totalSnippets,
     totalPages: getTotalPages(totalSnippets),
+
     snippets: snippets.map(snippet => {
       const likes = snippet.likes.flatMap(x => x.userId);
       return {

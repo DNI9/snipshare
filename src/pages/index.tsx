@@ -57,7 +57,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!session) return redirect('/explore');
 
   const userId = session?.user.id;
-  const data = await getSnippets(userId);
+  const data = await getSnippets({ userId });
   const collections = await getCollections(userId);
 
   return {

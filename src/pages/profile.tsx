@@ -72,7 +72,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   const userId = session?.user.id;
   const user = await getUserById(userId);
-  const data = await getSnippets(userId, page);
+  const data = await getSnippets({ userId }, page);
   const collections = await getCollections(userId);
 
   if (page > data.totalPages) return { notFound: true };

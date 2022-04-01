@@ -8,7 +8,8 @@ import { NextLink } from '~/components/core';
 import { CollectionCard } from '~/components/dashboard';
 import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
-import { getCollections, getSnippets } from '~/services/collection';
+import { getCollections } from '~/services/collection';
+import { getSnippets } from '~/services/snippet';
 import { SnippetData } from '~/types/snippet';
 import { parseServerData } from '~/utils/next';
 
