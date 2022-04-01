@@ -1,16 +1,16 @@
+import { Prisma } from '@prisma/client';
+
 import { prisma } from '~/lib/prisma';
 
-export const getUserById = async (id: string) => {
+export const getUniqueUser = async (filter: Prisma.UserWhereUniqueInput) => {
   const user = await prisma.user.findUnique({
-    where: { id },
+    where: filter,
     select: {
       id: true,
       name: true,
       email: true,
       image: true,
-      _count: {
-        select: { snippets: true, collections: true },
-      },
+      username: true,
     },
   });
 

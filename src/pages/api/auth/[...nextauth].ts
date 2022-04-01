@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { NextApiHandler } from 'next';
 import NextAuth, { NextAuthOptions } from 'next-auth';
@@ -24,8 +25,8 @@ const options: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   callbacks: {
     async session({ session, user }) {
-      // eslint-disable-next-line no-param-reassign
       session.user.id = user.id;
+      session.user.username = user.username as string;
       return session;
     },
   },

@@ -10,10 +10,10 @@ import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
 import { getCollections } from '~/services/collection';
 import { getSnippets } from '~/services/snippet';
-import { getUserById } from '~/services/user';
+import { getUniqueUser } from '~/services/user';
 import { SnippetData } from '~/types/snippet';
 import { UserWithCounts } from '~/types/user';
-import { parseServerData, redirect } from '~/utils/next';
+import { parseServerData } from '~/utils/next';
 
 type Props = {
   user: UserWithCounts;
@@ -21,7 +21,7 @@ type Props = {
   collections: Collection[];
 };
 
-export default function Profile({ user, data, collections }: Props) {
+export default function UserProfile({ user, data, collections }: Props) {
   return (
     <>
       <Meta title="Profile" />
@@ -29,18 +29,22 @@ export default function Profile({ user, data, collections }: Props) {
         <Grid gap={5} gridTemplateColumns={{ sm: '1fr', lg: '1fr 2fr' }} mt={8}>
           <ProfileSidebar user={user} />
           <GridItem>
-            <TitleRow href="/collections" title="Collections" />
-            <SimpleGrid mt={3} columns={{ sm: 2 }} spacing={5}>
-              {collections.map(collection => (
-                <NextLink
-                  key={collection.id}
-                  href={`/collections/${collection.id}`}
-                >
-                  <CollectionCard collection={collection} />
-                </NextLink>
-              ))}
-            </SimpleGrid>
-            <Spacer my={5} />
+            {collections.length ? (
+              <>
+                <TitleRow href="/collections" title="Collections" />
+                <SimpleGrid mt={3} columns={{ sm: 2 }} spacing={5}>
+                  {collections.map(collection => (
+                    <NextLink
+                      key={collection.id}
+                      href={`/collections/${user.username}/${collection.id}`}
+                    >
+                      <CollectionCard collection={collection} />
+                    </NextLink>
+                  ))}
+                </SimpleGrid>
+                <Spacer my={5} />
+              </>
+            ) : null}
             <TitleRow href="#" title="Snippets" />
             <SimpleGrid my={3} columns={1} spacing={5}>
               {data.snippets.map(snippet => (
@@ -54,6 +58,7 @@ export default function Profile({ user, data, collections }: Props) {
             <Pagination
               totalPages={data.totalPages}
               currentPage={data.currentPage}
+              explicitPath={`/${user.username}`}
             />
           </GridItem>
         </Grid>
@@ -65,21 +70,42 @@ export default function Profile({ user, data, collections }: Props) {
 export const getServerSideProps: GetServerSideProps = async ({
   req,
   query,
+  params,
 }) => {
+  const username = String(params?.username).trim();
+
   const page = Number(query.page) || 1;
   const session = await getSession({ req });
-  if (!session) return redirect('/auth/signin');
+  const loggedInUser = session?.user.id;
 
-  const userId = session?.user.id;
-  const user = await getUserById(userId);
-  const data = await getSnippets({ userId }, page);
-  const collections = await getCollections({ userId });
+  const user = await getUniqueUser({ username });
+  if (!user) return { notFound: true };
+
+  const isOwner = loggedInUser !== user?.id;
+
+  const data = await getSnippets(
+    {
+      userId: user?.id,
+      ...(isOwner ? { isPrivate: false } : {}),
+    },
+    page
+  );
+  const collections = await getCollections({
+    userId: user?.id,
+    ...(isOwner ? { isPrivate: false } : {}),
+  });
 
   if (page > data.totalPages) return { notFound: true };
 
   return {
     props: {
-      user,
+      user: {
+        ...user,
+        _count: {
+          snippets: data.totalResults,
+          collections: collections.length,
+        },
+      },
       data,
       collections: parseServerData(collections),
     },
