@@ -9,11 +9,11 @@ import { AppConfig } from '~/utils/AppConfig';
 import { NextLink } from '../core';
 import { AppMenu } from '../menu';
 
-const LINKS = ['explore', 'collections', 'snippets'];
-
 export const Nav = () => {
   const session = useSession();
   const router = useRouter();
+
+  const isLinkActive = (link: string) => router.pathname.includes(link);
 
   return (
     <HStack
@@ -29,15 +29,24 @@ export const Nav = () => {
           <Heading size="lg">{AppConfig.site_name}</Heading>
         </NextLink>
         <Spacer mx={2} />
-        {LINKS.map(link => {
-          return !router.pathname.includes(link) ? (
-            <NextLink href={`/${link}`} key={link}>
-              <Tag _hover={{ bg: 'blue.100' }} bg="transparent" rounded="full">
-                {link}
-              </Tag>
-            </NextLink>
-          ) : null;
-        })}
+        <NextLink href={`/explore`}>
+          <Tag
+            _hover={{ bg: 'blue.200' }}
+            bg={isLinkActive('/explore') ? 'blue.100' : 'transparent'}
+            rounded="full"
+          >
+            explore
+          </Tag>
+        </NextLink>
+        <NextLink href={`/collections`}>
+          <Tag
+            _hover={{ bg: 'blue.200' }}
+            bg={isLinkActive('/collections') ? 'blue.100' : 'transparent'}
+            rounded="full"
+          >
+            collections
+          </Tag>
+        </NextLink>
       </HStack>
 
       <HStack spacing={5}>
