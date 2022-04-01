@@ -67,7 +67,7 @@ export const SnippetCard: React.FC<Props> = ({ snippet, isPublic = false }) => {
     >
       <HStack>
         {isPublic ? (
-          <NextLink href={`/profile/${snippet.user?.username}`}>
+          <NextLink href={`/${snippet.user?.username}`}>
             <Tooltip
               hasArrow
               label={`Open ${snippet.user?.username}'s profile`}
