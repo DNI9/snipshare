@@ -1,14 +1,16 @@
+/* eslint-disable no-underscore-dangle */
 import type { StackProps } from '@chakra-ui/layout';
 import { Heading, HStack, Text, useToken, VStack } from '@chakra-ui/react';
-import { Collection } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { FaLock } from 'react-icons/fa';
 import { IoMdBookmark } from 'react-icons/io';
 
+import { CollectionWithCount } from '~/types/collection';
+
 const MotionVStack = motion<StackProps>(VStack);
 
 type Props = {
-  collection: Collection;
+  collection: CollectionWithCount;
   isActive?: boolean;
 };
 
@@ -41,7 +43,7 @@ export const CollectionCard = ({ collection, isActive = false }: Props) => {
       <Heading size="md">{collection.title}</Heading>
       {collection.description && <Text>{collection.description}</Text>}
       <Text color="gray" fontSize="sm">
-        22 snippets
+        {collection._count.snippets} snippets
       </Text>
     </MotionVStack>
   );

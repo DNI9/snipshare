@@ -1,5 +1,4 @@
 import { Grid, GridItem, SimpleGrid, Spacer } from '@chakra-ui/react';
-import { Collection } from '@prisma/client';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
@@ -11,6 +10,7 @@ import { AppLayout, Meta } from '~/layout';
 import { getCollections } from '~/services/collection';
 import { getSnippets } from '~/services/snippet';
 import { getUniqueUser } from '~/services/user';
+import { CollectionWithCount } from '~/types/collection';
 import { SnippetData } from '~/types/snippet';
 import { UserWithCounts } from '~/types/user';
 import { parseServerData } from '~/utils/next';
@@ -18,7 +18,7 @@ import { parseServerData } from '~/utils/next';
 type Props = {
   user: UserWithCounts;
   data: SnippetData;
-  collections: Collection[];
+  collections: CollectionWithCount[];
 };
 
 export default function UserProfile({ user, data, collections }: Props) {

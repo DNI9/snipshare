@@ -1,5 +1,4 @@
 import { Grid, GridItem, SimpleGrid, Spacer } from '@chakra-ui/react';
-import { Collection } from '@prisma/client';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
@@ -9,12 +8,13 @@ import { SnippetCard } from '~/components/snippet';
 import { Meta, AppLayout } from '~/layout';
 import { getCollections } from '~/services/collection';
 import { getSnippets } from '~/services/snippet';
+import { CollectionWithCount } from '~/types/collection';
 import { SnippetData } from '~/types/snippet';
 import { parseServerData, redirect } from '~/utils/next';
 
 type Props = {
   data: SnippetData;
-  collections: Collection[];
+  collections: CollectionWithCount[];
 };
 
 const Index = ({ data, collections }: Props) => {
