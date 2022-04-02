@@ -1,6 +1,6 @@
 import { Grid, GridItem, SimpleGrid, Spacer } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
+import { getSession, useSession } from 'next-auth/react';
 
 import { NextLink } from '~/components/core';
 import { CollectionCard, TitleRow } from '~/components/dashboard';
@@ -18,6 +18,8 @@ type Props = {
 };
 
 const Index = ({ data, collections }: Props) => {
+  const session = useSession();
+
   return (
     <>
       <Meta title="SnipShare" />
@@ -28,7 +30,7 @@ const Index = ({ data, collections }: Props) => {
           {collections.map(collection => (
             <NextLink
               key={collection.id}
-              href={`/collections/${collection.id}`}
+              href={`/${session.data?.user.username}/collection/${collection.id}`}
             >
               <CollectionCard collection={collection} />
             </NextLink>
