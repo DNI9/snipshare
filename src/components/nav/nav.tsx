@@ -38,15 +38,17 @@ export const Nav = () => {
             explore
           </Tag>
         </NextLink>
-        <NextLink href={`/collections`}>
-          <Tag
-            _hover={{ bg: 'blue.200' }}
-            bg={isLinkActive('/collections') ? 'blue.100' : 'transparent'}
-            rounded="full"
-          >
-            collections
-          </Tag>
-        </NextLink>
+        {session.status === 'authenticated' ? (
+          <NextLink href={`/collections`}>
+            <Tag
+              _hover={{ bg: 'blue.200' }}
+              bg={isLinkActive('/collections') ? 'blue.100' : 'transparent'}
+              rounded="full"
+            >
+              collections
+            </Tag>
+          </NextLink>
+        ) : null}
       </HStack>
 
       <HStack spacing={5}>
