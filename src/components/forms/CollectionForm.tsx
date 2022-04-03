@@ -10,15 +10,16 @@ import {
 } from '@chakra-ui/react';
 import type { FormikHelpers } from 'formik';
 import { Field, Form, Formik } from 'formik';
-import * as yup from 'yup';
 
 import { CollectionSchema } from '~/schema/collection';
-
-type SnippetType = yup.InferType<typeof CollectionSchema>;
+import { CollectionSchemaType } from '~/types/collection';
 
 type Props = {
-  initialValues: SnippetType;
-  onSubmit: (values: SnippetType, actions: FormikHelpers<SnippetType>) => void;
+  initialValues: CollectionSchemaType;
+  onSubmit: (
+    values: CollectionSchemaType,
+    actions: FormikHelpers<CollectionSchemaType>
+  ) => Promise<void>;
   isUpdateForm?: boolean;
 };
 

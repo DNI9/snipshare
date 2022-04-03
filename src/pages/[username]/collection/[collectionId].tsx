@@ -95,6 +95,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     userId: user.id,
     ...(isOwner ? {} : { isPrivate: false }),
   });
+
   const collectionExists = collections.findIndex(c => c.id === collectionId);
   if (collectionExists < 0) return { notFound: true };
 
@@ -107,8 +108,6 @@ export const getServerSideProps: GetServerSideProps = async ({
     page,
     loggedInUser
   );
-
-  if (page > snippetData.totalPages) return { notFound: true };
 
   return {
     props: {

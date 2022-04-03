@@ -14,16 +14,49 @@ import {
   ModalOverlay,
   useDisclosure,
 } from '@chakra-ui/react';
+import { FormikHelpers } from 'formik';
 import router from 'next/router';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { BiFolderPlus } from 'react-icons/bi';
 import { GoFileCode } from 'react-icons/go';
 
+import { SITE_URL } from '~/constants';
+import { useToaster } from '~/lib/hooks';
+import { CollectionSchemaType } from '~/types/collection';
+
 import { CollectionForm } from '../forms';
+
+const initialValues: CollectionSchemaType = {
+  title: '',
+  description: '',
+  isPrivate: false,
+};
 
 export const CreateMenu = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = useRef(null);
+  const { showErrorToast, showSuccessToast } = useToaster();
+
+  async function postCollection(
+    values: CollectionSchemaType,
+    actions: FormikHelpers<CollectionSchemaType>
+  ) {
+    try {
+      const res = await fetch(`${SITE_URL}/api/collection`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+      if (res.ok) showSuccessToast('collection created.');
+      else throw new Error(res.statusText || 'Something went wrong');
+    } catch (error) {
+      console.error(error);
+      showErrorToast('Failed to create collection');
+    } finally {
+      onClose();
+      actions.setSubmitting(false);
+    }
+  }
 
   return (
     <>
@@ -54,15 +87,8 @@ export const CreateMenu = () => {
               <ModalCloseButton />
               <ModalBody pb={6}>
                 <CollectionForm
-                  initialValues={{
-                    title: '',
-                    description: '',
-                    isPrivate: false,
-                  }}
-                  onSubmit={(values, actions) => {
-                    console.log(values);
-                    actions.setSubmitting(false);
-                  }}
+                  initialValues={initialValues}
+                  onSubmit={postCollection}
                 />
               </ModalBody>
             </ModalContent>
