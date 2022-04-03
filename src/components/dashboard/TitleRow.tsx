@@ -5,7 +5,7 @@ import { NextLink } from '~/components/core';
 
 type Props = {
   title: string;
-  href: string;
+  href?: string;
   actionTitle?: string;
 };
 
@@ -17,12 +17,14 @@ export const TitleRow: React.FC<Props> = ({
   return (
     <HStack justify="space-between">
       <Text fontSize="lg">{title}</Text>
-      <NextLink href={href}>
-        <Tag size="sm" colorScheme="blackAlpha">
-          <TagLabel fontSize={14}>{actionTitle}</TagLabel>
-          <TagRightIcon as={BsArrowRightShort} />
-        </Tag>
-      </NextLink>
+      {href && (
+        <NextLink href={href}>
+          <Tag size="sm" colorScheme="blackAlpha">
+            <TagLabel fontSize={14}>{actionTitle}</TagLabel>
+            <TagRightIcon as={BsArrowRightShort} />
+          </Tag>
+        </NextLink>
+      )}
     </HStack>
   );
 };
