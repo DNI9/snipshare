@@ -27,7 +27,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
         user: { connect: { email: session.user?.email! } },
       },
     });
-    return res.json(result);
+    return res.status(201).json(result);
   } catch (error) {
     if (error instanceof yup.ValidationError) {
       return res.status(400).json({ errors: error.errors });

@@ -39,7 +39,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
       select: { id: true },
     });
 
-    return res.json({ forked: true });
+    return res.status(201).json({ forked: true });
   } catch (error) {
     if (error instanceof yup.ValidationError) {
       return res.status(400).json({ errors: error.errors });
