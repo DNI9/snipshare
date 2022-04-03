@@ -1,13 +1,13 @@
 import { Avatar, Button, Heading, HStack, Spacer, Tag } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { AiOutlinePlus } from 'react-icons/ai';
 import { FiLogIn } from 'react-icons/fi';
 
 import { AppConfig } from '~/utils/AppConfig';
 
 import { NextLink } from '../core';
 import { AppMenu } from '../menu';
+import { CreateMenu } from './CreateMenu';
 
 export const Nav = () => {
   const session = useSession();
@@ -54,16 +54,7 @@ export const Nav = () => {
       <HStack spacing={5}>
         {session.status === 'authenticated' ? (
           <>
-            <NextLink href="/create">
-              <Button
-                leftIcon={<AiOutlinePlus size={22} />}
-                colorScheme="blue"
-                variant="solid"
-                size="sm"
-              >
-                Create
-              </Button>
-            </NextLink>
+            <CreateMenu />
             <AppMenu>
               <Avatar
                 showBorder
