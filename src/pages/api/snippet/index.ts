@@ -45,7 +45,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getSession({ req });
 
     const snippets = session
-      ? await getSnippets({ userId: session.user.id }, page)
+      ? await getSnippets({ userId: session.user.id }, session.user.id, page)
       : await getPublicSnippets({ page });
 
     return res.json(snippets);

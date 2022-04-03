@@ -7,8 +7,8 @@ import { getSkip, getTotalPages } from '~/utils/db';
 
 export const getSnippets = async (
   filter: Prisma.SnippetWhereInput,
-  page: number = 1,
-  loggedInUser?: string
+  loggedInUser?: string,
+  page: number = 1
 ) => {
   const snippets = await prisma.snippet.findMany({
     where: filter,

@@ -88,8 +88,8 @@ export const getServerSideProps: GetServerSideProps = async ({
       userId: user?.id,
       ...(isOwner ? {} : { isPrivate: false }),
     },
-    page,
-    loggedInUser
+    loggedInUser,
+    page
   );
   const collections = await getCollections({
     userId: user?.id,
