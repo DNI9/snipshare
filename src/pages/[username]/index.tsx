@@ -7,6 +7,7 @@ import { CollectionCard, TitleRow } from '~/components/dashboard';
 import { ProfileSidebar } from '~/components/profile';
 import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
+import { useAuthSession } from '~/lib/hooks';
 import { getCollections } from '~/services/collection';
 import { getSnippets } from '~/services/snippet';
 import { getUniqueUser } from '~/services/user';
@@ -22,6 +23,8 @@ type Props = {
 };
 
 export default function UserProfile({ user, data, collections }: Props) {
+  const { isLoggedIn } = useAuthSession();
+
   return (
     <>
       <Meta title="Profile" />
@@ -31,7 +34,10 @@ export default function UserProfile({ user, data, collections }: Props) {
           <GridItem>
             {collections.length ? (
               <>
-                <TitleRow href="/collections" title="Collections" />
+                <TitleRow
+                  href={isLoggedIn ? '/collections' : ''}
+                  title="Collections"
+                />
                 <SimpleGrid mt={3} columns={{ sm: 2 }} spacing={5}>
                   {collections.map(collection => (
                     <NextLink
