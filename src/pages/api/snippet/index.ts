@@ -26,6 +26,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
         isPrivate,
         user: { connect: { email: session.user?.email! } },
       },
+      select: { id: true },
     });
     return res.status(201).json(result);
   } catch (error) {
@@ -73,6 +74,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
         language,
         isPrivate,
       },
+      select: { id: true },
     });
 
     return res.json({ id: updatedSnippet.id });
