@@ -98,7 +98,7 @@ export const CollectionCard = ({
       <Text color="gray" fontSize="sm">
         {collection._count.snippets} snippets
       </Text>
-      {showEdit && (
+      {showEdit && isActive && (
         <IconButton
           onClick={onOpen}
           pos="absolute"
