@@ -51,7 +51,7 @@ export default function UserProfile({ user, data, collections }: Props) {
                 <SnippetCard
                   key={snippet.id}
                   snippet={snippet}
-                  isSnippetOwner
+                  isSnippetOwner={snippet.isSnippetOwner}
                 />
               ))}
             </SimpleGrid>
@@ -88,7 +88,8 @@ export const getServerSideProps: GetServerSideProps = async ({
       userId: user?.id,
       ...(isOwner ? {} : { isPrivate: false }),
     },
-    page
+    page,
+    loggedInUser
   );
   const collections = await getCollections({
     userId: user?.id,

@@ -7,7 +7,8 @@ import { getSkip, getTotalPages } from '~/utils/db';
 
 export const getSnippets = async (
   filter: Prisma.SnippetWhereInput,
-  page: number = 1
+  page: number = 1,
+  loggedInUser?: string
 ) => {
   const snippets = await prisma.snippet.findMany({
     where: filter,
@@ -42,14 +43,16 @@ export const getSnippets = async (
     totalPages: getTotalPages(totalSnippets),
 
     snippets: snippets.map(snippet => {
+      const isSnippetOwner = snippet.userId === loggedInUser;
       const likes = snippet.likes.flatMap(x => x.userId);
+
       return {
         ...snippet,
         createdAt: snippet.updatedAt.toISOString(),
         updatedAt: snippet.updatedAt.toISOString(),
         likes,
         likedByCurrentUser: likes.length > 0,
-        isSnippetOwner: true,
+        isSnippetOwner,
       };
     }),
   };

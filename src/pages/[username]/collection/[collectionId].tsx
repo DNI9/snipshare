@@ -54,7 +54,11 @@ export default function CollectionPage({ collections, snippetData }: Props) {
                 <Heading>No snippets available</Heading>
               ) : (
                 snippetData.snippets.map(snippet => (
-                  <SnippetCard key={snippet.id} snippet={snippet} />
+                  <SnippetCard
+                    key={snippet.id}
+                    snippet={snippet}
+                    isSnippetOwner={snippet.isSnippetOwner}
+                  />
                 ))
               )}
             </SimpleGrid>
@@ -100,7 +104,8 @@ export const getServerSideProps: GetServerSideProps = async ({
       collectionId,
       ...(isOwner ? {} : { isPrivate: false }),
     },
-    page
+    page,
+    loggedInUser
   );
 
   if (page > snippetData.totalPages) return { notFound: true };
