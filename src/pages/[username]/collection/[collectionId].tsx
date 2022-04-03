@@ -17,9 +17,14 @@ import { parseServerData } from '~/utils/next';
 type Props = {
   collections: CollectionWithCount[];
   snippetData: SnippetData;
+  isOwner: boolean;
 };
 
-export default function CollectionPage({ collections, snippetData }: Props) {
+export default function CollectionPage({
+  collections,
+  snippetData,
+  isOwner,
+}: Props) {
   const { query } = useRouter();
 
   return (
@@ -41,6 +46,7 @@ export default function CollectionPage({ collections, snippetData }: Props) {
                   href={`/${query.username}/collection/${collection.id}`}
                 >
                   <CollectionCard
+                    showEdit={isOwner}
                     collection={collection}
                     isActive={query?.collectionId === collection.id}
                   />
@@ -105,14 +111,15 @@ export const getServerSideProps: GetServerSideProps = async ({
       collectionId,
       ...(isOwner ? {} : { isPrivate: false }),
     },
-    page,
-    loggedInUser
+    loggedInUser,
+    page
   );
 
   return {
     props: {
       collections: parseServerData(collections),
       snippetData: parseServerData(snippetData),
+      isOwner,
     },
   };
 };
