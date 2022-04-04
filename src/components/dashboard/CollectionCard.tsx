@@ -1,4 +1,6 @@
 /* eslint-disable no-underscore-dangle */
+import { useState } from 'react';
+
 import type { StackProps } from '@chakra-ui/layout';
 import {
   Heading,
@@ -21,8 +23,8 @@ import { FaLock } from 'react-icons/fa';
 import { IoMdBookmark } from 'react-icons/io';
 import { MdEdit } from 'react-icons/md';
 
-import { SITE_URL } from '~/constants';
 import { useToaster } from '~/lib/hooks';
+import { updateCollection } from '~/services/client/collection';
 import { CollectionSchemaType, CollectionWithCount } from '~/types/collection';
 
 import { CollectionForm } from '../forms';
@@ -36,31 +38,24 @@ type Props = {
 };
 
 export const CollectionCard = ({
-  collection,
+  collection: data,
   isActive = false,
   showEdit,
 }: Props) => {
   const [blue200] = useToken('colors', ['blue.400']);
   const { showErrorToast, showSuccessToast } = useToaster();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [collection, setCollection] = useState(data);
 
-  async function updateCollection(
+  async function handleSubmit(
     values: CollectionSchemaType,
     actions: FormikHelpers<CollectionSchemaType>
   ) {
     try {
-      const res = await fetch(
-        `${SITE_URL}/api/collection?id=${collection.id}`,
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(values),
-        }
-      );
-      if (res.ok) {
-        showSuccessToast('collection updated.');
-        onClose();
-      } else throw new Error(res.statusText || 'Something went wrong');
+      await updateCollection(collection.id, values);
+      setCollection({ ...collection, ...values });
+      showSuccessToast('collection updated.');
+      onClose();
     } catch (error) {
       console.error(error);
       showErrorToast('Failed to update collection');
@@ -126,7 +121,7 @@ export const CollectionCard = ({
                 description: collection.description ?? '',
                 isPrivate: collection.isPrivate ?? false,
               }}
-              onSubmit={updateCollection}
+              onSubmit={handleSubmit}
             />
           </ModalBody>
         </ModalContent>
