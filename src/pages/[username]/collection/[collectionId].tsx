@@ -1,4 +1,4 @@
-import { Grid, GridItem, Heading, SimpleGrid } from '@chakra-ui/react';
+import { Grid, GridItem, Heading, SimpleGrid, Spacer } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -68,6 +68,7 @@ export default function CollectionPage({
                 ))
               )}
             </SimpleGrid>
+            <Spacer mb={2} />
             <Pagination
               totalPages={snippetData.totalPages}
               currentPage={snippetData.currentPage}
