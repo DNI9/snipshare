@@ -11,9 +11,11 @@ import {
 import { useRouter } from 'next/router';
 import { BiSearch } from 'react-icons/bi';
 
+import { getQueryString } from '~/utils/next';
+
 export const Search = () => {
-  const [search, setSearch] = useState('');
   const router = useRouter();
+  const [search, setSearch] = useState(getQueryString(router.query.q) || '');
 
   const handleSearch = (e: SyntheticEvent) => {
     e.preventDefault();
