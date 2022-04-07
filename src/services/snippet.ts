@@ -63,15 +63,20 @@ type PublicSnippetArgs = {
   loggedInUser?: string;
   queryUserId?: string;
   page?: number;
+  searchQuery?: string;
 };
 
 export const getPublicSnippets = async ({
   loggedInUser,
   queryUserId,
   page = 1,
+  searchQuery,
 }: PublicSnippetArgs) => {
   const snippetWhere: Prisma.SnippetWhereInput = {
     isPrivate: false,
+    ...(searchQuery
+      ? { title: { search: searchQuery.split(' ').join(' & ') } }
+      : {}),
     ...(queryUserId ? { userId: queryUserId } : {}),
     NOT: [{ userId: loggedInUser }],
   };

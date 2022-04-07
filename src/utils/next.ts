@@ -8,3 +8,6 @@ export const redirect = (destination: string = '/'): { redirect: Redirect } => {
 
 export const parseServerData = <T extends unknown>(data: T) =>
   JSON.parse(JSON.stringify(data)) as T;
+
+export const getQueryString = (q: string | string[] | undefined) =>
+  q ? decodeURI(q.toString()) : undefined;

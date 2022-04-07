@@ -10,6 +10,8 @@ import {
 import { useRouter } from 'next/router';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 
+import { getQueryString } from '~/utils/next';
+
 type PageButtonProps = {
   disabled?: boolean;
   active?: boolean;
@@ -68,6 +70,7 @@ export const Pagination: React.FC<Props> = ({
   explicitPath,
 }) => {
   const router = useRouter();
+  const search = getQueryString(router.query.q);
 
   if (totalPages < 2) return null;
 
@@ -75,7 +78,7 @@ export const Pagination: React.FC<Props> = ({
     if (!active) {
       router.push({
         pathname: explicitPath || router.pathname,
-        query: { page },
+        query: { page, ...(search ? { q: encodeURI(search) } : {}) },
       });
     }
   };

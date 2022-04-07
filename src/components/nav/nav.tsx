@@ -8,6 +8,7 @@ import { AppConfig } from '~/utils/AppConfig';
 import { NextLink } from '../core';
 import { AppMenu } from '../menu';
 import { CreateMenu } from './CreateMenu';
+import { Search } from './Search';
 
 export const Nav = () => {
   const session = useSession();
@@ -52,6 +53,7 @@ export const Nav = () => {
       </HStack>
 
       <HStack spacing={5}>
+        <Search />
         {session.status === 'authenticated' ? (
           <>
             <CreateMenu />

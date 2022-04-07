@@ -7,6 +7,7 @@ import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
 import { getPublicSnippets } from '~/services/snippet';
 import { SnippetData } from '~/types/snippet';
+import { getQueryString } from '~/utils/next';
 
 type Props = {
   data: SnippetData;
@@ -45,15 +46,15 @@ export const getServerSideProps: GetServerSideProps = async ({
     'Cache-Control',
     'public, s-maxage=10, stale-while-revalidate=59'
   );
+  const search = getQueryString(query.q);
   const page = Number(query.page) || 1;
   const session = await getSession({ req });
 
   const data = await getPublicSnippets({
     loggedInUser: session?.user.id,
+    searchQuery: search,
     page,
   });
-
-  if (page > data.totalPages) return { notFound: true };
 
   return { props: { data } };
 };
