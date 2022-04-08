@@ -1,4 +1,4 @@
-import { Avatar, Button, Heading, HStack, Spacer, Tag } from '@chakra-ui/react';
+import { Button, Heading, HStack, Spacer, Tag } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { FiLogIn } from 'react-icons/fi';
@@ -6,7 +6,7 @@ import { FiLogIn } from 'react-icons/fi';
 import { AppConfig } from '~/utils/AppConfig';
 
 import { NextLink } from '../core';
-import { AppMenu } from '../menu';
+import { AvatarMenu } from '../menu';
 import { CreateMenu } from './CreateMenu';
 import { Search } from './Search';
 
@@ -57,14 +57,7 @@ export const Nav = () => {
         {session.status === 'authenticated' ? (
           <>
             <CreateMenu />
-            <AppMenu>
-              <Avatar
-                showBorder
-                name={session.data?.user?.name ?? 'Anon'}
-                src={session.data?.user?.image ?? ''}
-                size="sm"
-              />
-            </AppMenu>
+            <AvatarMenu />
           </>
         ) : (
           <NextLink href="/auth/signin">
