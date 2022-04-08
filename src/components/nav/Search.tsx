@@ -24,7 +24,11 @@ export const Search = () => {
   useEventListener('keydown', event => {
     const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator?.platform);
     const hotkey = isMac ? 'metaKey' : 'ctrlKey';
-    if (event?.key?.toLowerCase() === 'k' && event[hotkey]) {
+    const key = event?.key?.toLowerCase();
+
+    if (isFocused && key === 'escape') inputRef.current?.blur();
+
+    if (key === 'k' && event[hotkey]) {
       event.preventDefault();
       if (!isFocused && inputRef.current) inputRef.current.focus();
       else inputRef.current?.blur();
