@@ -54,6 +54,7 @@ export const Search = () => {
           minW="sm"
           _focus={{ minW: 'md' }}
           value={search}
+          transition="all 200ms ease-in-out"
           onChange={e => setSearch(e.target.value)}
           rounded="md"
           name="search"
