@@ -4,6 +4,7 @@ type TMenuItems = {
   title: string;
   icon?: JSX.Element;
   onClick: () => void;
+  hidden?: boolean;
 };
 
 type Props = {
@@ -15,11 +16,13 @@ export const CoreMenu: React.FC<Props> = ({ items, children }) => {
     <Menu>
       <MenuButton>{children}</MenuButton>
       <MenuList>
-        {items.map(({ icon, onClick, title }) => (
-          <MenuItem key={title} icon={icon} onClick={onClick}>
-            {title}
-          </MenuItem>
-        ))}
+        {items.map(({ icon, onClick, title, hidden }) =>
+          !hidden ? (
+            <MenuItem key={title} icon={icon} onClick={onClick}>
+              {title}
+            </MenuItem>
+          ) : null
+        )}
       </MenuList>
     </Menu>
   );

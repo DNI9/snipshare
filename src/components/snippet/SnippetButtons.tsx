@@ -1,13 +1,22 @@
 import { useCallback, useState } from 'react';
 
-import { Badge, HStack, useBoolean, useClipboard } from '@chakra-ui/react';
+import {
+  Badge,
+  HStack,
+  Show,
+  useBoolean,
+  useClipboard,
+} from '@chakra-ui/react';
 import debounce from 'lodash.debounce';
 import { useSession } from 'next-auth/react';
+import Router from 'next/router';
 import { BiGitRepoForked } from 'react-icons/bi';
 import { FaClone, FaHeart } from 'react-icons/fa';
+import { HiDotsVertical } from 'react-icons/hi';
 import { IoMdDoneAll } from 'react-icons/io';
 import { MdEdit } from 'react-icons/md';
 
+import { CoreMenu } from '~/components/menu';
 import { useToaster } from '~/lib/hooks';
 import { forkSnippet } from '~/services/client/fork';
 import { likeSnippet } from '~/services/client/like';
@@ -77,28 +86,51 @@ export const SnippetButtons: React.FC<Props> = ({ snippet }) => {
           _disabled: { color: 'gray', cursor: 'not-allowed' },
         }}
       />
-      {!snippet.isSnippetOwner ? (
-        <>
-          {isLoggedIn ? (
-            <SnipIconButton
-              label="Fork snippet"
-              onClick={handleFork}
-              icon={<BiGitRepoForked />}
-            />
-          ) : null}
-        </>
-      ) : (
+      <Show breakpoint="(max-width: 30em)">
+        <CoreMenu
+          items={[
+            { title: 'Copy', onClick: onCopy, icon: <FaClone /> },
+            {
+              title: 'Edit',
+              hidden: !isLoggedIn || !snippet.isSnippetOwner,
+              onClick: () => Router.push(`/update/${snippet.id}`),
+              icon: <MdEdit />,
+            },
+            {
+              title: 'Fork',
+              hidden: !isLoggedIn || snippet.isSnippetOwner,
+              onClick: handleFork,
+              icon: <BiGitRepoForked />,
+            },
+          ]}
+        >
+          <SnipIconButton label="Snippet Menu" icon={<HiDotsVertical />} />
+        </CoreMenu>
+      </Show>
+      <Show breakpoint="(min-width: 30em)">
+        {!snippet.isSnippetOwner ? (
+          <>
+            {isLoggedIn ? (
+              <SnipIconButton
+                label="Fork snippet"
+                onClick={handleFork}
+                icon={<BiGitRepoForked />}
+              />
+            ) : null}
+          </>
+        ) : (
+          <SnipIconButton
+            href={`/update/${snippet.id}`}
+            label="Edit snippet"
+            icon={<MdEdit />}
+          />
+        )}
         <SnipIconButton
-          href={`/update/${snippet.id}`}
-          label="Edit snippet"
-          icon={<MdEdit />}
+          label="Copy snippet"
+          icon={hasCopied ? <IoMdDoneAll /> : <FaClone />}
+          onClick={onCopy}
         />
-      )}
-      <SnipIconButton
-        label="Copy snippet"
-        icon={hasCopied ? <IoMdDoneAll /> : <FaClone />}
-        onClick={onCopy}
-      />
+      </Show>
     </>
   );
 };
