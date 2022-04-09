@@ -19,6 +19,7 @@ export const forkSnippet = async (
     language: snippet.language,
     isPrivate: snippet.isPrivate ?? false,
     description: snippet.description ?? '',
+    collection: '',
   };
 
   try {
