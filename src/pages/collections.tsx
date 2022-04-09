@@ -1,17 +1,13 @@
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
-import Head from 'next/head';
 
+import { EmptyView } from '~/components/common';
 import { prisma } from '~/lib/prisma';
 import { redirect } from '~/utils/next';
 
 export default function Collections() {
   return (
-    <>
-      <Head>
-        <title>Redirecting...</title>
-      </Head>
-    </>
+    <EmptyView description="No collections available, try creating a collection with create button on navbar." />
   );
 }
 
@@ -24,7 +20,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     orderBy: { updatedAt: 'desc' },
   });
 
-  if (!collection) return { notFound: true };
+  if (!collection) return { props: {} };
 
   return redirect(`/${session.user.username}/collection/${collection.id}`);
 };
