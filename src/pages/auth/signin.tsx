@@ -50,6 +50,7 @@ export default function SignIn({ providers }: Props) {
         <Text fontSize={['md', '2xl', '3xl']}>Create, Share and explore</Text>
         <Heading
           bgGradient="linear(to-r, blue.400, purple.300)"
+          lineHeight="normal"
           bgClip="text"
           fontSize={['5xl', '6xl', '8xl']}
           fontWeight="extrabold"
