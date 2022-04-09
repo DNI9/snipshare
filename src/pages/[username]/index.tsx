@@ -22,7 +22,7 @@ import { getUniqueUser } from '~/services/user';
 import { CollectionWithCount } from '~/types/collection';
 import { SnippetData } from '~/types/snippet';
 import { UserWithCounts } from '~/types/user';
-import { parseServerData } from '~/utils/next';
+import { getPage, parseServerData } from '~/utils/next';
 
 type Props = {
   user: UserWithCounts;
@@ -111,7 +111,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
   const username = String(params?.username).trim();
 
-  const page = Number(query.page) || 1;
+  const page = getPage(query.page);
   const session = await getSession({ req });
   const loggedInUser = session?.user.id;
 

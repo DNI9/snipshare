@@ -11,3 +11,8 @@ export const parseServerData = <T extends unknown>(data: T) =>
 
 export const getQueryString = (q: string | string[] | undefined) =>
   q ? decodeURI(q.toString()) : undefined;
+
+export const getPage = (page: string | string[] | undefined) => {
+  const p = Number(page);
+  return typeof p === 'number' && p > 0 ? p : 1;
+};
