@@ -2,6 +2,7 @@ import { Center, SimpleGrid, Text } from '@chakra-ui/react';
 import type { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
+import { EmptyView } from '~/components/common';
 import { Pagination } from '~/components/core';
 import { SnippetCard } from '~/components/snippet';
 import { AppLayout, Meta } from '~/layout';
@@ -39,6 +40,11 @@ const Snippets = ({ data }: { data: SnippetType[] }) => (
 );
 
 export default function Explore({ data, search }: Props) {
+  if (!data.totalResults && !search)
+    return (
+      <EmptyView description="No one made their snippets public, that's why it's empty here" />
+    );
+
   return (
     <>
       <Meta title="Explore SnipShare" />
