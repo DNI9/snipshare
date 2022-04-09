@@ -35,7 +35,7 @@ export default function UpdateSnippet({ snippet, collections }: Props) {
     content: snippet.content,
     isPrivate: snippet.isPrivate ?? false,
     language: snippet.language,
-    collection: snippet.collection.id || '',
+    collection: snippet.collection?.id || '',
   };
 
   async function updateSnippet(
