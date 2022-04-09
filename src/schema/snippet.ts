@@ -6,6 +6,7 @@ export const SnippetSchema = yup
     content: yup.string().max(5000).required('Snippet code is required'),
     language: yup.string().required(),
     description: yup.string().max(500),
+    collection: yup.string(),
     isPrivate: yup.boolean(),
   })
   .strict();

@@ -1,12 +1,17 @@
 import { Container } from '@chakra-ui/react';
+import { Collection } from '@prisma/client';
 import { FormikHelpers } from 'formik';
+import { GetServerSideProps } from 'next';
+import { getSession } from 'next-auth/react';
 import * as yup from 'yup';
 
 import { SnippetForm } from '~/components/forms';
 import { SITE_URL } from '~/constants';
 import { Meta, AppLayout } from '~/layout';
 import { useToaster } from '~/lib/hooks';
+import { prisma } from '~/lib/prisma';
 import { SnippetSchema } from '~/schema/snippet';
+import { parseServerData, redirect } from '~/utils/next';
 
 type SnippetType = yup.InferType<typeof SnippetSchema>;
 
@@ -20,7 +25,11 @@ export const MyCode = () => {
 }
 `.trim();
 
-export default function CreateSnippet() {
+type Props = {
+  collections: Pick<Collection, 'id' | 'title'>[];
+};
+
+export default function CreateSnippet({ collections }: Props) {
   const { showErrorToast, showSuccessToast } = useToaster();
 
   const initialValues: SnippetType = {
@@ -28,6 +37,7 @@ export default function CreateSnippet() {
     description: '',
     content: defaultCode,
     isPrivate: false,
+    collection: '',
     language: 'jsx',
   };
 
@@ -56,9 +66,31 @@ export default function CreateSnippet() {
       <Meta title="Create new snippet" />
       <AppLayout>
         <Container my={5} maxW="container.md">
-          <SnippetForm initialValues={initialValues} onSubmit={postSnippet} />
+          <SnippetForm
+            initialValues={initialValues}
+            onSubmit={postSnippet}
+            collections={collections}
+          />
         </Container>
       </AppLayout>
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const session = await getSession({ req });
+  if (!session) return redirect('/auth/signin');
+
+  const userId = session?.user.id;
+  const collections = await prisma.collection.findMany({
+    where: { userId },
+    select: { id: true, title: true },
+    orderBy: { updatedAt: 'desc' },
+  });
+
+  return {
+    props: {
+      collections: parseServerData(collections),
+    },
+  };
+};

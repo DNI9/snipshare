@@ -8,7 +8,9 @@ import {
   Select,
   Checkbox,
   Text,
+  HStack,
 } from '@chakra-ui/react';
+import { Collection } from '@prisma/client';
 import { Formik, Field, Form, FormikHelpers } from 'formik';
 import * as yup from 'yup';
 
@@ -25,6 +27,7 @@ type Props = {
     values: SnippetType,
     actions: FormikHelpers<SnippetType>
   ) => Promise<void>;
+  collections?: Pick<Collection, 'id' | 'title'>[];
   isUpdateForm?: boolean;
 };
 
@@ -32,6 +35,7 @@ export const SnippetForm = ({
   initialValues,
   onSubmit,
   isUpdateForm = false,
+  collections,
 }: Props) => {
   return (
     <Formik
@@ -82,24 +86,48 @@ export const SnippetForm = ({
               />
               <FormErrorMessage>{errors.description}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors.language && touched.language}>
-              <FormLabel htmlFor="language">Language</FormLabel>
-              <Field
-                as={Select}
-                id="language"
-                name="language"
-                variant="filled"
-                errorBorderColor="red.300"
-                placeholder="Select language"
-              >
-                {languages.map(lang => (
-                  <option key={lang} value={lang}>
-                    {lang}
-                  </option>
-                ))}
-              </Field>
-              <FormErrorMessage>{errors.language}</FormErrorMessage>
-            </FormControl>
+            <HStack w="full">
+              <FormControl isInvalid={!!errors.language && touched.language}>
+                <FormLabel htmlFor="language">Language</FormLabel>
+                <Field
+                  as={Select}
+                  id="language"
+                  name="language"
+                  variant="filled"
+                  errorBorderColor="red.300"
+                  placeholder="Select language"
+                >
+                  {languages.map(lang => (
+                    <option key={lang} value={lang}>
+                      {lang}
+                    </option>
+                  ))}
+                </Field>
+                <FormErrorMessage>{errors.language}</FormErrorMessage>
+              </FormControl>
+              {collections && collections.length ? (
+                <FormControl
+                  isInvalid={!!errors.collection && touched.collection}
+                >
+                  <FormLabel htmlFor="collection">Collection</FormLabel>
+                  <Field
+                    as={Select}
+                    id="collection"
+                    name="collection"
+                    variant="filled"
+                    errorBorderColor="red.300"
+                    placeholder="Select collection"
+                  >
+                    {collections.map(collection => (
+                      <option key={collection.id} value={collection.id}>
+                        {collection.title}
+                      </option>
+                    ))}
+                  </Field>
+                  <FormErrorMessage>{errors.language}</FormErrorMessage>
+                </FormControl>
+              ) : null}
+            </HStack>
             <FormControl isInvalid={!!errors.content && touched.content}>
               <FormLabel htmlFor="content">Snippet</FormLabel>
               <CodeHighlighter

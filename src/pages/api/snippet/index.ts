@@ -15,7 +15,8 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!session) return res.status(401).send({ message: 'Unauthorized' });
 
     const snippet = await SnippetSchema.validate(req.body);
-    const { title, isPrivate, content, description, language } = snippet;
+    const { title, isPrivate, content, description, language, collection } =
+      snippet;
 
     const result = await prisma.snippet.create({
       data: {
@@ -25,6 +26,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
         language,
         isPrivate,
         user: { connect: { email: session.user?.email! } },
+        ...(collection ? { collection: { connect: { id: collection } } } : {}),
       },
       select: { id: true },
     });
@@ -63,7 +65,8 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!session) return res.status(401).send({ message: 'Unauthorized' });
 
     const snippet = await SnippetSchema.validate(req.body);
-    const { title, isPrivate, content, description, language } = snippet;
+    const { title, isPrivate, content, description, language, collection } =
+      snippet;
 
     const updatedSnippet = await prisma.snippet.update({
       where: { id: String(snipId) },
@@ -73,6 +76,7 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
         description,
         language,
         isPrivate,
+        ...(collection ? { collection: { connect: { id: collection } } } : {}),
       },
       select: { id: true },
     });

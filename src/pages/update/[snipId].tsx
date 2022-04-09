@@ -1,8 +1,9 @@
 import { Container } from '@chakra-ui/react';
-import { Snippet } from '@prisma/client';
+import { Collection, Snippet } from '@prisma/client';
 import { FormikHelpers } from 'formik';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
+import { Object } from 'ts-toolbelt';
 import * as yup from 'yup';
 
 import { SnippetForm } from '~/components/forms';
@@ -15,14 +16,17 @@ import { redirect } from '~/utils/next';
 
 type SnippetType = yup.InferType<typeof SnippetSchema>;
 
+type TSnippet = Pick<
+  Snippet,
+  'id' | 'title' | 'description' | 'content' | 'isPrivate' | 'language'
+>;
+
 type Props = {
-  snippet: Pick<
-    Snippet,
-    'id' | 'title' | 'description' | 'content' | 'isPrivate' | 'language'
-  >;
+  snippet: Object.Merge<TSnippet, { collection: { id: string } }>;
+  collections: Pick<Collection, 'id' | 'title'>[];
 };
 
-export default function UpdateSnippet({ snippet }: Props) {
+export default function UpdateSnippet({ snippet, collections }: Props) {
   const { showErrorToast, showSuccessToast } = useToaster();
 
   const initialValues: SnippetType = {
@@ -31,6 +35,7 @@ export default function UpdateSnippet({ snippet }: Props) {
     content: snippet.content,
     isPrivate: snippet.isPrivate ?? false,
     language: snippet.language,
+    collection: snippet.collection.id || '',
   };
 
   async function updateSnippet(
@@ -61,6 +66,7 @@ export default function UpdateSnippet({ snippet }: Props) {
           <SnippetForm
             initialValues={initialValues}
             onSubmit={updateSnippet}
+            collections={collections}
             isUpdateForm
           />
         </Container>
@@ -75,10 +81,11 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
   const session = await getSession({ req });
   if (!session) return redirect('/auth/signin');
+  const userId = session?.user.id;
 
   const snippet = await prisma.snippet.findFirst({
     where: {
-      AND: [{ id: String(params?.snipId) }, { userId: session.user.id }],
+      AND: [{ id: String(params?.snipId) }, { userId }],
     },
     select: {
       id: true,
@@ -87,12 +94,19 @@ export const getServerSideProps: GetServerSideProps = async ({
       content: true,
       language: true,
       isPrivate: true,
+      collection: { select: { id: true } },
     },
   });
 
   if (!snippet) return { notFound: true };
 
+  const collections = await prisma.collection.findMany({
+    where: { userId },
+    select: { id: true, title: true },
+    orderBy: { updatedAt: 'desc' },
+  });
+
   return {
-    props: { snippet },
+    props: { snippet, collections },
   };
 };
