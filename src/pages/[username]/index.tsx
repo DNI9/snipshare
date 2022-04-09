@@ -1,4 +1,12 @@
-import { Grid, GridItem, SimpleGrid, Spacer } from '@chakra-ui/react';
+import {
+  Button,
+  Center,
+  Grid,
+  GridItem,
+  SimpleGrid,
+  Spacer,
+  Text,
+} from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
@@ -19,10 +27,16 @@ import { parseServerData } from '~/utils/next';
 type Props = {
   user: UserWithCounts;
   data: SnippetData;
+  isOwner: boolean;
   collections: CollectionWithCount[];
 };
 
-export default function UserProfile({ user, data, collections }: Props) {
+export default function UserProfile({
+  user,
+  data,
+  collections,
+  isOwner,
+}: Props) {
   const { isLoggedIn } = useAuthSession();
 
   return (
@@ -51,21 +65,38 @@ export default function UserProfile({ user, data, collections }: Props) {
                 <Spacer my={5} />
               </>
             ) : null}
-            <TitleRow href="#" title="Snippets" />
-            <SimpleGrid my={3} columns={1} spacing={5}>
-              {data.snippets.map(snippet => (
-                <SnippetCard
-                  key={snippet.id}
-                  snippet={snippet}
-                  isSnippetOwner={snippet.isSnippetOwner}
+            {data.snippets?.length ? (
+              <>
+                <TitleRow title="Snippets" />
+                <SimpleGrid my={3} columns={1} spacing={5}>
+                  {data.snippets.map(snippet => (
+                    <SnippetCard
+                      key={snippet.id}
+                      snippet={snippet}
+                      isSnippetOwner={snippet.isSnippetOwner}
+                    />
+                  ))}
+                </SimpleGrid>
+                <Pagination
+                  totalPages={data.totalPages}
+                  currentPage={data.currentPage}
+                  explicitPath={`/${user.username}`}
                 />
-              ))}
-            </SimpleGrid>
-            <Pagination
-              totalPages={data.totalPages}
-              currentPage={data.currentPage}
-              explicitPath={`/${user.username}`}
-            />
+              </>
+            ) : (
+              <Center flexDir="column">
+                <Text fontSize="2xl" mt={3} mb={2}>
+                  No Snippets available
+                </Text>
+                {isOwner && (
+                  <NextLink href="/create">
+                    <Button size="sm" colorScheme="blue">
+                      Create one
+                    </Button>
+                  </NextLink>
+                )}
+              </Center>
+            )}
           </GridItem>
         </Grid>
       </AppLayout>
@@ -102,10 +133,11 @@ export const getServerSideProps: GetServerSideProps = async ({
     ...(isOwner ? {} : { isPrivate: false }),
   });
 
-  if (page > data.totalPages) return { notFound: true };
+  if (!!data.totalResults && page > data.totalPages) return { notFound: true };
 
   return {
     props: {
+      isOwner,
       user: {
         ...user,
         _count: {
