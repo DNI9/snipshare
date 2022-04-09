@@ -1,6 +1,7 @@
 import { SyntheticEvent, useRef, useState } from 'react';
 
 import {
+  Box,
   Input,
   InputGroup,
   InputLeftElement,
@@ -42,31 +43,33 @@ export const Search = () => {
 
   return (
     <form onSubmit={handleSearch}>
-      <InputGroup variant="outline" size="sm">
-        <InputLeftElement pointerEvents="none">
-          <BiSearch />
-        </InputLeftElement>
-        <Input
-          onFocus={inputFocus.toggle}
-          onBlur={inputFocus.toggle}
-          ref={inputRef}
-          pl={6}
-          minW="sm"
-          _focus={{ minW: 'md' }}
-          value={search}
-          transition="all 200ms ease-in-out"
-          onChange={e => setSearch(e.target.value)}
-          rounded="md"
-          name="search"
-          type="search"
-          placeholder="Search snippets, collections"
-        />
-        <InputRightElement mr={5}>
-          <Kbd rounded="sm">CTRL</Kbd>
-          <Spacer mx={0.5} />
-          <Kbd rounded="sm">K</Kbd>
-        </InputRightElement>
-      </InputGroup>
+      <Box w="full">
+        <InputGroup variant="outline" size="sm">
+          <InputLeftElement pointerEvents="none">
+            <BiSearch />
+          </InputLeftElement>
+          <Input
+            onFocus={inputFocus.toggle}
+            onBlur={inputFocus.toggle}
+            ref={inputRef}
+            pl={6}
+            minW={{ sm: 'sm' }}
+            _focus={{ sm: { minW: 'md' } }}
+            value={search}
+            transition="all 200ms ease-in-out"
+            onChange={e => setSearch(e.target.value)}
+            rounded="md"
+            name="search"
+            type="search"
+            placeholder="Search snippets, collections"
+          />
+          <InputRightElement mr={5} display={{ base: 'none', sm: 'flex' }}>
+            <Kbd rounded="sm">CTRL</Kbd>
+            <Spacer mx={0.5} />
+            <Kbd rounded="sm">K</Kbd>
+          </InputRightElement>
+        </InputGroup>
+      </Box>
     </form>
   );
 };
