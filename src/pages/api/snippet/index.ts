@@ -76,7 +76,11 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
         description,
         language,
         isPrivate,
-        ...(collection ? { collection: { connect: { id: collection } } } : {}),
+        collection: {
+          ...(collection
+            ? { connect: { id: collection } }
+            : { disconnect: true }),
+        },
       },
       select: { id: true },
     });
