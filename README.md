@@ -1,5 +1,5 @@
 <div align="center">
-  <a href="https://github.com/DNI9/snipshare">
+  <a href="https://snippshare.vercel.app">
     <img src="docs/snipshare_icon.png" alt="Logo" width="100" height="100">
   </a>
 
@@ -8,23 +8,25 @@
   <p align="center">
     Create, Share and explore code snippets
     <br />
-    <a href="https://github.com/DNI9/snipshare"><strong>Open live app »</strong></a>
+    <a href="https://snippshare.vercel.app"><strong>Open live app »</strong></a>
   </p>
-	<div align="center">
-		<img src="https://img.shields.io/badge/Next.JS-black?style=for-the-badge&logo=next.js&logoColor=white"
-			alt="NextJS" />
-		<img src="https://img.shields.io/badge/chakraui-%234ED1C5.svg?style=for-the-badge&logo=chakraui&logoColor=white"
-			alt="chakra ui" />
-		<img
-			src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white"
-			alt="Prisma" />
-		<img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white"
-			alt="typescript" />
-		</>
-	</div>
+	<a href="https://snippshare.vercel.app">
+		<div align="center">
+			<img src="https://img.shields.io/badge/Next.JS-black?style=for-the-badge&logo=next.js&logoColor=white"
+				alt="NextJS" />
+			<img src="https://img.shields.io/badge/chakraui-%234ED1C5.svg?style=for-the-badge&logo=chakraui&logoColor=white"
+				alt="chakra ui" />
+			<img
+				src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white"
+				alt="Prisma" />
+			<img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white"
+				alt="typescript" />
+			</>
+		</div>
+	</a>
 </div>
 
-# Features
+# ✨ Features
 
 - Oauth with Github
 - CRUD with snippet
@@ -38,7 +40,7 @@
 - Public profile viewing
 - Pagination
 
-# Run locally
+# 🧑‍💻 Run locally
 
 ## Setting up environment
 
@@ -70,7 +72,7 @@ yarn dev
 yarn build
 ```
 
-# Deployment
+# 🚀 Deployment
 
 ## Setting up a database
 
