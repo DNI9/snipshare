@@ -1,4 +1,12 @@
-import { Grid, GridItem, Heading, SimpleGrid, Spacer } from '@chakra-ui/react';
+import {
+  Button,
+  Center,
+  Grid,
+  GridItem,
+  SimpleGrid,
+  Spacer,
+  Text,
+} from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -57,7 +65,18 @@ export default function CollectionPage({
           <GridItem>
             <SimpleGrid columns={1} spacing={3}>
               {!snippetData.snippets.length ? (
-                <Heading>No snippets available</Heading>
+                <Center flexDir="column">
+                  <Text fontSize="2xl" mt={3} mb={2}>
+                    No Snippets available
+                  </Text>
+                  {isOwner && (
+                    <NextLink href="/create">
+                      <Button size="sm" colorScheme="blue">
+                        Create one
+                      </Button>
+                    </NextLink>
+                  )}
+                </Center>
               ) : (
                 snippetData.snippets.map(snippet => (
                   <SnippetCard
