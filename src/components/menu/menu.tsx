@@ -13,7 +13,7 @@ type Props = {
 
 export const CoreMenu: React.FC<Props> = ({ items, children }) => {
   return (
-    <Menu>
+    <Menu placement="bottom-end">
       <MenuButton>{children}</MenuButton>
       <MenuList>
         {items.map(({ icon, onClick, title, hidden }) =>
