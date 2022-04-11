@@ -52,7 +52,7 @@ cp .env.example .env
 
 Checkout [NextAuth guide](https://next-auth.js.org/providers/github) to generate github tokens.
 
-For database create postgres database with below command. PostgreSQL must be installed locally or use heroku managed database, see [deployment guide](#deployment).
+For database create postgres database with below command. PostgreSQL must be installed locally or use heroku managed database, see [deployment guide](#🚀-deployment).
 
 ```sh
 createdb snipshare
