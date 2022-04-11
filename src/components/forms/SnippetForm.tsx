@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 import {
   VStack,
   FormControl,
@@ -9,13 +11,23 @@ import {
   Checkbox,
   Text,
   HStack,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { Collection } from '@prisma/client';
 import { Formik, Field, Form, FormikHelpers } from 'formik';
+import { useRouter } from 'next/router';
 import * as yup from 'yup';
 
 import { languages } from '~/constants';
+import { useToaster } from '~/lib/hooks';
 import { SnippetSchema } from '~/schema/snippet';
+import { deleteSnippet } from '~/services/client/snippet';
 
 import { CodeHighlighter } from '../core';
 
@@ -37,6 +49,11 @@ export const SnippetForm = ({
   isUpdateForm = false,
   collections,
 }: Props) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = useRef(null);
+  const router = useRouter();
+  const { showErrorToast, showSuccessToast } = useToaster();
+
   return (
     <Formik
       initialValues={initialValues}
@@ -160,6 +177,61 @@ export const SnippetForm = ({
             >
               {isUpdateForm ? 'Update' : 'Create'} snippet
             </Button>
+            {isUpdateForm && (
+              <>
+                <Button
+                  colorScheme="red"
+                  isFullWidth
+                  disabled={isSubmitting}
+                  isLoading={isSubmitting}
+                  onClick={onOpen}
+                >
+                  Delete snippet
+                </Button>
+                <AlertDialog
+                  isOpen={isOpen}
+                  leastDestructiveRef={cancelRef}
+                  onClose={onClose}
+                >
+                  <AlertDialogOverlay>
+                    <AlertDialogContent>
+                      <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                        Delete Snippet
+                      </AlertDialogHeader>
+
+                      <AlertDialogBody>
+                        Are you sure you want to delete this snippet?
+                      </AlertDialogBody>
+
+                      <AlertDialogFooter>
+                        <Button ref={cancelRef} onClick={onClose}>
+                          Cancel
+                        </Button>
+                        <Button
+                          colorScheme="red"
+                          onClick={() =>
+                            deleteSnippet(
+                              String(router.query?.snipId),
+                              data => {
+                                if (data.deleted) {
+                                  showSuccessToast('Snippet deleted');
+                                  router.replace('/');
+                                } else {
+                                  showErrorToast('failed to delete snipper');
+                                }
+                              }
+                            )
+                          }
+                          ml={3}
+                        >
+                          Delete
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialogOverlay>
+                </AlertDialog>
+              </>
+            )}
           </VStack>
         </Form>
       )}

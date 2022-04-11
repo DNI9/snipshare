@@ -95,6 +95,25 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
+const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const snipId = req.query?.id;
+    if (!snipId || typeof snipId !== 'string')
+      return res.status(400).send({ message: 'Snippet id is required' });
+
+    const session = await getSession({ req });
+    if (!session) return res.status(401).send({ message: 'Unauthorized' });
+
+    const { count } = await prisma.snippet.deleteMany({
+      where: { AND: [{ id: snipId }, { userId: session.user.id }] },
+    });
+    return res.json({ deleted: !!count });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ errors: 'something bad happened' });
+  }
+};
+
 export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
@@ -108,6 +127,9 @@ export default async function handle(
     }
     case 'PUT': {
       return handlePUT(req, res);
+    }
+    case 'DELETE': {
+      return handleDELETE(req, res);
     }
     default:
       throw new Error(
