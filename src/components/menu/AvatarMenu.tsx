@@ -1,4 +1,12 @@
-import { Avatar, useConst } from '@chakra-ui/react';
+import {
+  Avatar,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+  useConst,
+} from '@chakra-ui/react';
 import { signOut } from 'next-auth/react';
 import Router from 'next/router';
 import { FiLogOut } from 'react-icons/fi';
@@ -7,10 +15,11 @@ import { IoMdBookmark } from 'react-icons/io';
 
 import { useAuthSession } from '~/lib/hooks';
 
-import { CoreMenu } from './menu';
+import { DarkModeMenu } from './DarkModeMenu';
 
 export const AvatarMenu = () => {
   const { data } = useAuthSession();
+
   const menuItems = useConst([
     {
       title: 'Collections',
@@ -34,13 +43,24 @@ export const AvatarMenu = () => {
   ]);
 
   return (
-    <CoreMenu items={menuItems}>
-      <Avatar
-        showBorder
-        name={data?.user?.name ?? 'Anon'}
-        src={data?.user?.image ?? ''}
-        size="sm"
-      />
-    </CoreMenu>
+    <Menu placement="bottom-end">
+      <MenuButton>
+        <Avatar
+          showBorder
+          name={data?.user?.name ?? 'Anon'}
+          src={data?.user?.image ?? ''}
+          size="sm"
+        />
+      </MenuButton>
+      <MenuList>
+        <DarkModeMenu />
+        <MenuDivider />
+        {menuItems.map(({ icon, onClick, title }) => (
+          <MenuItem key={title} icon={icon} onClick={onClick}>
+            {title}
+          </MenuItem>
+        ))}
+      </MenuList>
+    </Menu>
   );
 };

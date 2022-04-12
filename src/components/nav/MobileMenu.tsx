@@ -19,6 +19,7 @@ import { HiOutlineMenu } from 'react-icons/hi';
 
 import { useAuthSession } from '~/lib/hooks';
 
+import { DarkModeMenu } from '../menu/DarkModeMenu';
 import { CollectionCreateModal } from '../modals';
 import { Search } from './Search';
 
@@ -40,6 +41,7 @@ export const MobileMenu = () => {
         />
       </MenuButton>
       <MenuList>
+        <DarkModeMenu />
         <MenuItem onClick={() => goto('/explore')}>Explore</MenuItem>
         <MenuDivider />
         {isLoggedIn ? (
