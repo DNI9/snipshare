@@ -14,8 +14,13 @@ import {
 } from '@chakra-ui/react';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { FiSearch } from 'react-icons/fi';
+import { AiOutlineFileSearch } from 'react-icons/ai';
+import { BiFolderPlus } from 'react-icons/bi';
+import { FiLogIn, FiLogOut, FiSearch } from 'react-icons/fi';
+import { GoFileCode } from 'react-icons/go';
 import { HiOutlineMenu } from 'react-icons/hi';
+import { ImUser } from 'react-icons/im';
+import { MdLibraryBooks } from 'react-icons/md';
 
 import { useAuthSession } from '~/lib/hooks';
 
@@ -42,26 +47,52 @@ export const MobileMenu = () => {
       </MenuButton>
       <MenuList>
         <DarkModeMenu />
-        <MenuItem onClick={() => goto('/explore')}>Explore</MenuItem>
+        <MenuItem
+          icon={<AiOutlineFileSearch size={20} />}
+          onClick={() => goto('/explore')}
+        >
+          Explore
+        </MenuItem>
         <MenuDivider />
         {isLoggedIn ? (
           <>
-            <MenuItem onClick={() => goto('/create')}>Create Snippet</MenuItem>
+            <MenuItem
+              icon={<GoFileCode size={20} />}
+              onClick={() => goto('/create')}
+            >
+              Create Snippet
+            </MenuItem>
             <>
-              <MenuItem onClick={onOpen}>Create Collection</MenuItem>
+              <MenuItem icon={<BiFolderPlus size={20} />} onClick={onOpen}>
+                Create Collection
+              </MenuItem>
               <CollectionCreateModal modalProps={{ isOpen, onClose }} />
             </>
             <MenuDivider />
-            <MenuItem onClick={() => goto(`/${data?.user.username}`)}>
-              My Profile
-            </MenuItem>
-            <MenuItem onClick={() => goto('/collections')}>
+
+            <MenuItem
+              icon={<MdLibraryBooks size={20} />}
+              onClick={() => goto('/collections')}
+            >
               Collections
             </MenuItem>
-            <MenuItem onClick={() => signOut()}>Logout</MenuItem>
+            <MenuItem
+              icon={<ImUser size={20} />}
+              onClick={() => goto(`/${data?.user.username}`)}
+            >
+              My Profile
+            </MenuItem>
+            <MenuItem icon={<FiLogOut size={20} />} onClick={() => signOut()}>
+              Logout
+            </MenuItem>
           </>
         ) : (
-          <MenuItem onClick={() => goto('/auth/signin')}>Login</MenuItem>
+          <MenuItem
+            icon={<FiLogIn size={20} />}
+            onClick={() => goto('/auth/signin')}
+          >
+            Login
+          </MenuItem>
         )}
       </MenuList>
     </Menu>
