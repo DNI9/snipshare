@@ -14,6 +14,7 @@
 		<div align="center">
 			<img src="https://img.shields.io/badge/Next.JS-black?style=for-the-badge&logo=next.js&logoColor=white"
 				alt="NextJS" />
+			<img src="https://custom-icon-badges.herokuapp.com/badge/-Next%20Auth-black?style=for-the-badge&logoColor=black&logo=next-auth-logo" alt="next-auth" />
 			<img src="https://img.shields.io/badge/chakraui-%234ED1C5.svg?style=for-the-badge&logo=chakraui&logoColor=white"
 				alt="chakra ui" />
 			<img
